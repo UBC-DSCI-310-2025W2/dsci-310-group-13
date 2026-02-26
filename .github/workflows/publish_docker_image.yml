@@ -1,0 +1,33 @@
+name: Publish Docker Image
+
+on:
+  push:
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/publish_docker_image.yml'
+    branches:
+      - main
+      - feat/**
+      - chore/**
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/wine-project:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/wine-project:latest
