@@ -1,5 +1,4 @@
-# dsci-310-group-13
-## Wine Quality Analysis
+# Wine Quality Analysis
 
 ## Contributers
 1. Siluni Jayarathne
@@ -25,7 +24,7 @@ The analysis follows these steps:
 5. Results visualization
 
 ## Dependencies
-Python 3.10
+Python 3.11
 pandas
 numpy
 scikit-learn
