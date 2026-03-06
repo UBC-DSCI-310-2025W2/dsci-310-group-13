@@ -12,7 +12,9 @@ RUN pip install \
     numpy==1.26.4 \
     scikit-learn==1.4.2 \
     matplotlib==3.8.4 \
-    seaborn==0.13.2
+    seaborn==0.13.2\
+    jinja2==3.1.2 \
+    requests==2.31.0
 
 # Default command
 CMD ["start-notebook.sh"]
