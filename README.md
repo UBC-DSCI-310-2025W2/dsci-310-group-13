@@ -15,7 +15,7 @@ We will be using the Wine Quality dataset (Cortez et al., 2009) on the UC Irvine
 
 We will be building a kNN classification model on chemical attributes of wine from the dataset.
 
-## how to run the data analysis
+## How to Run the Data Analysis
 
 Using supervised machine learning classification models (Pedregosa et al., 2011), we analyze how chemical characteristics influence perceived wine quality and evaluate model performance using standard classification metrics.
 
