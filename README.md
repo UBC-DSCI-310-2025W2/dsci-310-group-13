@@ -1,31 +1,118 @@
-# Wine Quality Analysis
+# Wine Quality Classification
 
 ## Contributors
 
-1. Siluni Jayarathne
-2. Alexis Widjaja
-3. Sungha Choi
-4. Karen Siem
+- Siluni Jayarathne  
+- Alexis Widjaja  
+- Sungha Choi  
+- Karen Siem  
 
-## Project Summary
+This project investigates how physicochemical properties of wine relate to perceived quality. Using supervised machine learning techniques, we develop a classification model to predict wine quality scores on a scale from 0 to 10.
 
-Our goal of the project is to classify the quality of the wine as a number between 0 and 10 depending on chemical properties such as fixed acidity, volatile acidity, citric acid, residual sugar,chlorides, free sulfur dioxide, total sulfur dioxide, density, pH and sulphates.
+The dataset consists of red and white variants of Portuguese "Vinho Verde" wine and includes measurements such as acidity, sugar content, sulfur dioxide levels, and alcohol content.
 
-We will be using the Wine Quality dataset (Cortez et al., 2009) on the UC Irvine Machine Learning Repository. There are 13 variables and 4898 records. There are no missing values.
+## Research Objective
 
-We will be building a kNN classification model on chemical attributes of wine from the dataset.
+The primary objective of this study is:
 
-## how to run the data analysis
+> **Can we accurately predict wine quality based on its chemical properties?**
 
-Using supervised machine learning classification models (Pedregosa et al., 2011), we analyze how chemical characteristics influence perceived wine quality and evaluate model performance using standard classification metrics.
+To address this question, we implement and evaluate a **k-Nearest Neighbors (kNN)** classification model and analyze its performance across different quality levels.
 
-The analysis follows these steps:
+---
 
-1. Data loading and cleaning
-2. Exploratory data analysis (EDA)
-3. Model training (classification algorithms)
-4. Model evaluation and comparison
-5. Results visualization
+## Dataset
+
+- Source: UCI Machine Learning Repository  
+- Dataset: *Wine Quality Dataset* (Cortez et al., 2009)  
+- Observations: **4,898**  
+- Features: **13** (12 predictors + 1 target variable)  
+- Missing values: **None**
+
+### Features include
+
+- Fixed acidity  
+- Volatile acidity  
+- Citric acid  
+- Residual sugar  
+- Chlorides  
+- Free sulfur dioxide  
+- Total sulfur dioxide  
+- Density  
+- pH  
+- Sulphates  
+- Alcohol  
+- Wine type (categorical: red/white)  
+
+Target variable:
+
+- **Quality score (integer: 0–10)**
+
+## Methodology
+
+The analysis follows a structured machine learning pipeline:
+
+1. **Data Collection & Cleaning**
+   - Loaded datasets from UCI repository
+   - Standardized column names
+   - Merged red and white datasets
+   - Added categorical feature: `wine_type`
+
+2. **Exploratory Data Analysis (EDA)**
+   - Examined feature distributions
+   - Identified class imbalance in quality scores
+   - Analyzed relationships between variables
+
+3. **Preprocessing**
+   - Numerical features scaled using `StandardScaler`
+   - Categorical variable encoded using `OneHotEncoder`
+   - Combined using a `ColumnTransformer`
+
+4. **Model Development**
+   - Model: k-Nearest Neighbors (kNN)
+   - Hyperparameter tuning using `GridSearchCV`
+   - Cross-validation: **5-fold StratifiedKFold**
+   - Tuned parameter: `n_neighbors`
+
+5. **Model Evaluation**
+   - Metrics:
+     - Accuracy
+     - Precision, Recall, F1-score
+     - Confusion Matrix
+   - Focus on **weighted F1-score** due to class imbalance
+
+## Results
+
+- **Accuracy:** 0.55  
+- **Weighted F1-score:** 0.54  
+
+### Key Findings
+
+- The model performs best on **quality scores 5 and 6**, which dominate the dataset.
+- Performance is significantly lower for **rare classes** (e.g., 3, 8, 9).
+- This indicates a strong effect of **class imbalance** on model performance.
+
+### Interpretation
+
+While the model captures general trends in the data, it struggles to generalize to underrepresented classes. This suggests that:
+
+- Additional data collection may improve performance  
+- Alternative models (e.g., Random Forest, Gradient Boosting) could yield better results  
+- Techniques such as **resampling or class weighting** may help address imbalance  
+
+## Project Structure
+
+.
+├── data/
+│ ├── raw/
+│ └── processed/
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── wine-quality-classification.ipynb
+├── Dockerfile
+├── README.md
+├── LICENSE.md
+└── .github/workflows/
 
 ## Dependencies
 
@@ -36,6 +123,36 @@ The analysis follows these steps:
     seaborn==0.13.2
     jinja2==3.1.2 
     requests==2.31.0
+
+## Run the project
+
+1. Build the image:
+
+```bash
+docker build -t wine-analysis .
+```
+
+1. Run the container:
+
+```bash
+docker run -p 8888:8888 wine-analysis
+```
+
+### Run the project without Docker
+
+Local Environment
+
+1. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Reproducibility
+
+All experiments are reproducible using the provided code and Docker environment.
+Random states are controlled where applicable.
+Data is sourced directly from a public repository.
 
 ## Results
 
