@@ -17,6 +17,8 @@ The primary objective of this study is:
 
 > **Can we accurately predict wine quality based on its chemical properties?**
 
+## How to Run the Data Analysis
+
 To address this question, we implement and evaluate a **k-Nearest Neighbors (kNN)** classification model and analyze its performance across different quality levels.
 
 ---
