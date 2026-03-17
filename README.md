@@ -104,6 +104,7 @@ While the model captures general trends in the data, it struggles to generalize 
 
 ## Project Structure
 
+```
 .
 ├── data/
 │ ├── raw/
@@ -115,6 +116,7 @@ While the model captures general trends in the data, it struggles to generalize 
 ├── README.md
 ├── LICENSE.md
 └── .github/workflows/
+```
 
 ## Dependencies
 
