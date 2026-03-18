@@ -1,4 +1,4 @@
-FROM jupyter/scipy-notebook:python-3.11
+FROM jupyter/scipy-notebook:python-3.11.8
 
 # Set working directory
 WORKDIR /home/jovyan/work

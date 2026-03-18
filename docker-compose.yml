@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  notebook:
+    build: .
+    image: group-ds-notebook:1.0
+    ports:
+      - "8888:8888"        # Maps Jupyter port from container to your machine
+    volumes:
+      - .:/home/jovyan/work # Mounts current folder into container
+    command: start-notebook.sh
