@@ -93,7 +93,7 @@ white["wine_type"] = "white"
 wine = pd.concat([red, white], ignore_index = True) 
 
 # save to processed folder
-wine.to_csv("data/processed/wine.csv", index= False)
+wine.to_csv("../data/processed/wine.csv", index= False)
 ```
 
 ```{python}
