@@ -1,0 +1,15 @@
+# Step 1: Download
+data/raw/winequality-red.csv data/raw/winequality-white.csv : src/download_data.py
+	python src/download_data.py --red-url="..." --white-url="..." --output-dir="data/raw"
+
+# Step 2: Clean
+data/processed/cleaned_wine.csv : data/raw/winequality-red.csv data/raw/winequality-white.csv src/clean_data.py
+	python src/clean_data.py --red-input="data/raw/winequality-red.csv" --white-input="data/raw/winequality-white.csv" --output-file="data/processed/cleaned_wine.csv"
+
+# Step 3: Split
+data/processed/train.csv data/processed/test.csv : data/processed/cleaned_wine.csv src/split_data.py
+	python src/split_data.py --input-file="data/processed/cleaned_wine.csv" --train-output="data/processed/train.csv" --test-output="data/processed/test.csv"
+
+# Step 4: EDA
+results/figures/quality_distribution.png : data/processed/train.csv src/eda_visuals.py
+	python src/eda_visuals.py --input-file="data/processed/train.csv" --output-dir="results/figures"
