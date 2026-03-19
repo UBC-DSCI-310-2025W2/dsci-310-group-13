@@ -1,20 +1,15 @@
 ---
-title: Wine Quality Analysis
-jupyter: python3
+title: "Wine Quality Analysis"
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+bibliography: references.bib
 ---
-
-
-## Summary
-- [Data Collection and Preparation](#cell1) - Combined red and white wine datasets and added a new column wine_type (white/red).
-- [Data Partitioning](#cell2) Split data into training and testing sets (70-30)
-- [EDA](#cell3) - Exploratory Data Analysis to identify how variables correlate with the response variable.
-- [Model Training](#cell4) - Used KNN classifier.
-- [Model Evaluation](#cell5) - Evaluate predictions made on the test set. Metrics used were F1 score, accuracy, classification report and confusion matrix.
-- [Results and Discussion](#cell6) - Results of the model and conclusion
 
 ## Abstract
 
-This study explores the relationship between physicochemical properties and wine quality using the Wine Quality dataset. We apply a k-Nearest Neighbors (kNN) classification model to predict quality scores based on chemical attributes such as acidity, sugar content, and alcohol levels. 
+This study explores the relationship between physicochemical properties and wine quality using the [@cortez2009wine]. We apply a k-Nearest Neighbors (kNN) classification model to predict quality scores based on chemical attributes such as acidity, sugar content, and alcohol levels. 
 
 The dataset consists of 4,898 observations with no missing values. A preprocessing pipeline including feature scaling and encoding was implemented, and hyperparameters were tuned using 5-fold cross-validation. 
 
@@ -22,12 +17,12 @@ The final model achieved an accuracy of 0.55 and a weighted F1-score of 0.54, pe
 
 ## Introduction 
 ### (I) Background Introduction : 
-This project explores the chemical properties of red and white Vinho Verde wines produced in north Portugal. Although wine quality is traditionally evaluated through sensory analysis, it can also be time-consuming, and difficult to reproduce consistently. As a result, there is growing interest in using data-driven methods to analyze the physicochemical characteristics of wine and predict its perceived quality (Cortez et al., 2009). <br> <br>
+This project explores the chemical properties of red and white Vinho Verde wines produced in north Portugal. Although wine quality is traditionally evaluated through sensory analysis, it can also be time-consuming, and difficult to reproduce consistently. As a result, there is growing interest in using data-driven methods to analyze the physicochemical characteristics of wine and predict its perceived quality [@cortez2009modeling]. <br> <br>
 The dataset used in this study contains several chemical attributes of wine samples, including acidity levels, sugar content, alcohol concentration, and sulfur dioxide levels. These features provide a description of each wine’s composition and may contain patterns that relate to perceived quality scores. <br><br>
-Machine learning techniques with the scikit-learn library (Pedregosa et al., 2011) can help uncover these patterns and provide predictive models for wine quality. In this project, we apply a k-Nearest Neighbors (kNN) classification algorithm (Cover & Hart, 1967), a distance-based method that predicts the quality of a wine sample by comparing its physicochemical profile to similar observations in the training dataset. Specifically, this study seeks to answer: To what extent can the physicochemical properties of wine be used to accurately classify its quality rating on a scale of 1–10, and for which quality levels does the model struggle to distinguish between observations?
+Machine learning techniques with the scikit-learn library [@pedregosa2011scikit] can help uncover these patterns and provide predictive models for wine quality. In this project, we apply a k-Nearest Neighbors (kNN) classification algorithm [@cover1967nearest], a distance-based method that predicts the quality of a wine sample by comparing its physicochemical profile to similar observations in the training dataset. Specifically, this study seeks to answer: To what extent can the physicochemical properties of wine be used to accurately classify its quality rating on a scale of 1–10, and for which quality levels does the model struggle to distinguish between observations?
 
 ### (II) Data Description : 
-The data is sourced from the UCI Machine Leaning Repository (Cortez et al., 2009). We will be working with the `winequality-red.csv` and `winequality-white.csv` dataset. `winequality-red.csv` contains 1599 observations and `winequality-white.csv` contains 4898 observations. Both datasets contain 12 variables including : 
+The data is sourced from the UCI Machine Leaning Repository [@cortez2009wine]. We will be working with the `winequality-red.csv` and `winequality-white.csv` dataset. `winequality-red.csv` contains 1599 observations and `winequality-white.csv` contains 4898 observations. Both datasets contain 12 variables including : 
 - `fixed acidity` (dbl) - concentration of fixed acids in the wine
 - `volatile acidity` (dbl) - amount of acetic acid, which can give a vinegar taste
 - `citric acid` (dbl) – concentration of citric acid
@@ -45,9 +40,8 @@ The data is sourced from the UCI Machine Leaning Repository (Cortez et al., 2009
 
 ## Methods
 
-<a id="cell1"></a>
 ### 1. Data Acquisition
-The primary data source consists of two separate CSV files hosted on the UCI Machine Learning Repository (Cortez et al., 2009), representing red and white wine samples. We begin by loading these files directly into our environment.
+The primary data source consists of two separate CSV files hosted on the UCI Machine Learning Repository [@cortez2009wine], representing red and white wine samples. We begin by loading these files directly into our environment.
 
 ```{python}
 # load library and dataset 
@@ -113,7 +107,6 @@ missing_values_table = wine.isnull().sum().to_frame(name="Missing Count")
 missing_values_table.style.set_caption("Table 2: Missing Value Analysis")
 ```
 
-<a id="cell2"></a>
 ### 4. Data Partitioning (Train/Test Split)
 To avoid data leakage and ensure we can evaluate our model's performance on unseen data, we split the data. We use a 70% training and 30% testing split. We also use stratification on the `quality` variable to ensure both sets have a similar distribution of quality scores.
 
@@ -131,7 +124,6 @@ print(train.shape)
 print(test.shape)
 ```
 
-<a id="cell3"></a>
 ### 5. Exploratory Data Analysis (EDA)
 With our training data isolated, we perform a summary analysis to understand the chemical difference between high-quality and low-quality wines.
 
@@ -211,7 +203,6 @@ Although the correlation heatmap (Figure 3) reveals that some variables have wea
 
 However, given the significant disparities in feature scales identified in our histograms (Figure 2), standardization (Z-score scaling) will be a mandatory step in the modeling pipeline to ensure that distance-based calculations are not biased by the magnitude of individual variables. The dataset is now cleaned, verified for integrity, and prepared for the training of our kNN classifier
 
-<a id="cell4"></a>
 ### 6. kNN analysis
 
 We will now implement a KNN model to classify each wine into their quality group [1,10]
@@ -311,7 +302,6 @@ First, we defined a parameter grid for n_neighbors of the KNN step in the pipeli
 
 This cell runs the grid search on the training data and then prints the best hyperparameter configuration, allowing us to determine the most optomal number of n_neighbors for this model.
 
-<a id="cell5"></a>
 ### 7. Model evaluation
 
 ```{python}
@@ -359,18 +349,17 @@ print(f"Accuracy: {accuracy:.3f}")
 
 The model predicts the exact wine quality accurately 55% of the time. This accuracy is higher than random guessing (1/10), so the model learns something, but still misses accurate predictions almost half of the time.  
 
-<a id="cell6"></a>
 ## Results
 In answering our research question regarding the extent of kNN's predictive power, our model, optimized through cross-validation, achieved a classification accuracy of approximately 55% and a weighted F1-score of 0.54. As shown in the confusion matrix, the model performs strongest when predicting the most frequent quality scores (5 and 6), which represent the majority of the dataset. However, addressing the second part of our question, the model struggles significantly to distinguish between observations at the extremes of the scale (quality scores of 3, 4, 8, and 9). These results confirm that while chemical properties provide a strong signal for average wine quality, they are less effective at distinguishing between exceptionally high or low quality wines without a more balanced training set.
 
 ## Discussion
 **Summary of Findings**
 
-In this study, we explored whether the physicochemical properties of wine could accurately predict its quality rating. Our k-Nearest Neighbors (kNN) model achieved an accuracy of 55%. The model performed best at identifying wines with quality scores of 5 and 6, which represent the majority of our dataset. However, it significantly struggled to correctly classify wines at the high (8+) and low (3-4) ends of the quality scale.
+In this study, we explored whether the physicochemical properties of wine could accurately predict its quality rating. Our [@cover1967nearest] achieved an accuracy of 55%. The model performed best at identifying wines with quality scores of 5 and 6, which represent the majority of our dataset. However, it significantly struggled to correctly classify wines at the high (8+) and low (3-4) ends of the quality scale.
 
 **Expectations vs. Reality**
 
-We expected that by including all 11 physicochemical features and applying StandardScaler, the kNN model would be able to draw clear boundaries between quality classes. While our EDA showed that alcohol and volatile acidity are strong indicators, the model's moderate accuracy suggests that there is a high degree of overlap in the chemical neighborhoods of different wine qualities. Our results align with the initial findings of Cortez et al. (2009), who noted that while chemical properties are influential, human preference remains a highly complex variable to model mathematically.
+We expected that by including all 11 physicochemical features and applying StandardScaler, [@cover1967nearest] would be able to draw clear boundaries between quality classes. While our EDA showed that alcohol and volatile acidity are strong indicators, the model's moderate accuracy suggests that there is a high degree of overlap in the chemical neighborhoods of different wine qualities. Our results align with the initial findings of [@cortez2009modeling], who noted that while chemical properties are influential, human preference remains a highly complex variable to model mathematically.
 
 **Impact of Findings**
 
@@ -383,8 +372,4 @@ This study leads to several interesting questions for future research:
 2. Are there other chemical markers, such as specific flavor compounds or tannins, that were not in this dataset but could improve prediction accuracy?
 
 ## References
-Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J. (2009). *Modeling wine preferences by data mining from physicochemical properties*. Decision Support Systems, 47(4), 547-553. https://doi.org/10.1016/j.dss.2009.05.016 <br>
-Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J. (2009). *Wine Quality [Dataset]*. UCI Machine Learning Repository. https://doi.org/10.24432/C56S3T. <br>
-Cover, T., & Hart, P. (1967). *Nearest neighbor pattern classification*. IEEE Transactions on Information Theory, 13(1), 21-27. https://doi.org/10.1109/TIT.1967.1053964 <br>
-Pedregosa, F., et al. (2011). *Scikit-learn: Machine Learning in Python*. Journal of Machine Learning Research, 12, 2825–2830.
 
