@@ -1,9 +1,10 @@
 import click
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.pipeline import Pipeline
+from sklearn.compose import make_column_transformer
 
 
 @click.command()
@@ -28,10 +29,28 @@ def model_analysis(train_input, test_input, metrics_output):
 
     X_test = test.drop(columns=["quality"])
     y_test = test["quality"]
+    
+    # Preprocessor
+    categorical_variable = ["wine_type"]
+    numerical_variable = ["fixed_acidity",
+                        "volatile_acidity", 
+                        "citric_acid",
+                        "residual_sugar",
+                        "chlorides", 
+                        "free_sulfur_dioxide", 
+                        "total_sulfur_dioxide", 
+                        "density", 
+                        "ph", 
+                        "sulphates",
+                        "alcohol"]
 
+    preprocessor = make_column_transformer(
+        (StandardScaler(), numerical_variable),
+        (OneHotEncoder(drop="if_binary"), categorical_variable))
+        
     # pipeline: scaling + KNN
     model = Pipeline([
-        ("scaler", StandardScaler()),
+        ("preprocessor", preprocessor),
         ("knn", KNeighborsClassifier(n_neighbors=5))
     ])
 
