@@ -9,4 +9,5 @@ __pycache__/
 *.pyc
 
 
-.Rproj
+.Rproj.user/
+*.Rproj

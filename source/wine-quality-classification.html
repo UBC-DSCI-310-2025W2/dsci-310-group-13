@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Wine Quality Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="wine-quality-classification_files/libs/clipboard/clipboard.min.js"></script>
+<script src="wine-quality-classification_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="wine-quality-classification_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="wine-quality-classification_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="wine-quality-classification_files/libs/quarto-html/popper.min.js"></script>
+<script src="wine-quality-classification_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="wine-quality-classification_files/libs/quarto-html/anchor.min.js"></script>
+<link href="wine-quality-classification_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="wine-quality-classification_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="wine-quality-classification_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="wine-quality-classification_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="wine-quality-classification_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Wine Quality Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li><a href="#cell1">Data Collection and Preparation</a> - Combined red and white wine datasets and added a new column wine_type (white/red).</li>
+<li><a href="#cell2">Data Partitioning</a> Split data into training and testing sets (70-30)</li>
+<li><a href="#cell3">EDA</a> - Exploratory Data Analysis to identify how variables correlate with the response variable.</li>
+<li><a href="#cell4">Model Training</a> - Used KNN classifier.</li>
+<li><a href="#cell5">Model Evaluation</a> - Evaluate predictions made on the test set. Metrics used were F1 score, accuracy, classification report and confusion matrix.</li>
+<li><a href="#cell6">Results and Discussion</a> - Results of the model and conclusion</li>
+</ul>
+</section>
+<section id="abstract" class="level2">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
+<p>This study explores the relationship between physicochemical properties and wine quality using the Wine Quality dataset. We apply a k-Nearest Neighbors (kNN) classification model to predict quality scores based on chemical attributes such as acidity, sugar content, and alcohol levels.</p>
+<p>The dataset consists of 4,898 observations with no missing values. A preprocessing pipeline including feature scaling and encoding was implemented, and hyperparameters were tuned using 5-fold cross-validation.</p>
+<p>The final model achieved an accuracy of 0.55 and a weighted F1-score of 0.54, performing best on the most common quality classes. Results indicate that class imbalance affects performance, particularly for rare quality scores. Future improvements could include alternative models and resampling techniques.</p>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<section id="i-background-introduction" class="level3">
+<h3 class="anchored" data-anchor-id="i-background-introduction">(I) Background Introduction :</h3>
+<p>This project explores the chemical properties of red and white Vinho Verde wines produced in north Portugal. Although wine quality is traditionally evaluated through sensory analysis, it can also be time-consuming, and difficult to reproduce consistently. As a result, there is growing interest in using data-driven methods to analyze the physicochemical characteristics of wine and predict its perceived quality (Cortez et al., 2009). <br> <br> The dataset used in this study contains several chemical attributes of wine samples, including acidity levels, sugar content, alcohol concentration, and sulfur dioxide levels. These features provide a description of each wine’s composition and may contain patterns that relate to perceived quality scores. <br><br> Machine learning techniques with the scikit-learn library (Pedregosa et al., 2011) can help uncover these patterns and provide predictive models for wine quality. In this project, we apply a k-Nearest Neighbors (kNN) classification algorithm (Cover &amp; Hart, 1967), a distance-based method that predicts the quality of a wine sample by comparing its physicochemical profile to similar observations in the training dataset. Specifically, this study seeks to answer: To what extent can the physicochemical properties of wine be used to accurately classify its quality rating on a scale of 1–10, and for which quality levels does the model struggle to distinguish between observations?</p>
+</section>
+<section id="ii-data-description" class="level3">
+<h3 class="anchored" data-anchor-id="ii-data-description">(II) Data Description :</h3>
+<p>The data is sourced from the UCI Machine Leaning Repository (Cortez et al., 2009). We will be working with the <code>winequality-red.csv</code> and <code>winequality-white.csv</code> dataset. <code>winequality-red.csv</code> contains 1599 observations and <code>winequality-white.csv</code> contains 4898 observations. Both datasets contain 12 variables including : - <code>fixed acidity</code> (dbl) - concentration of fixed acids in the wine - <code>volatile acidity</code> (dbl) - amount of acetic acid, which can give a vinegar taste - <code>citric acid</code> (dbl) – concentration of citric acid - <code>residual sugar</code> (dbl) – amount of sugar remaining after fermentation - <code>chlorides (dbl)</code> – salt content of the wine - <code>free sulfur dioxide</code> (dbl) – free SO₂ level - <code>total sulfur dioxide</code> (dbl) – total SO₂ level - <code>density</code> (dbl) – density of the wine - <code>pH</code> (dbl) – acidity level of the wine - <code>sulphates</code> (dbl) – potassium sulphate level (wine preservative) - <code>alcohol</code> (dbl) – alcohol percentage by volume - <code>quality</code> (int) – quality score assigned to the wine with score of 1 to 10 (target variable)</p>
+</section>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<p><a id="cell1" href=""></a> ### 1. Data Acquisition The primary data source consists of two separate CSV files hosted on the UCI Machine Learning Repository (Cortez et al., 2009), representing red and white wine samples. We begin by loading these files directly into our environment.</p>
+<div id="8ae3d718" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load library and dataset </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> StringIO</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># load data from the original source on the web</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>red_url <span class="op">=</span> <span class="st">"https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>white_url <span class="op">=</span> <span class="st">"https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># the raw files use semicolons as delimiters</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>red_content <span class="op">=</span> requests.get(red_url).text</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>white_content <span class="op">=</span> requests.get(white_url).text</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>red <span class="op">=</span> pd.read_csv(StringIO(red_content), sep<span class="op">=</span><span class="st">';'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>white <span class="op">=</span> pd.read_csv(StringIO(white_content), sep<span class="op">=</span><span class="st">';'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="082e2a9e" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(red.shape)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(white.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(1599, 12)
+(4898, 12)</code></pre>
+</div>
+</div>
+<section id="data-cleaning-and-standardization" class="level3">
+<h3 class="anchored" data-anchor-id="data-cleaning-and-standardization">2. Data Cleaning and Standardization</h3>
+<p>To ensure the datasets can be merged and analyzed seamlessly, we standardize the column names. We convert all headers to lowercase and replace spaces with underscores to prevent syntax errors.</p>
+<div id="05e9968b" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clean column names</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>red.columns <span class="op">=</span> red.columns.<span class="bu">str</span>.strip().<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">" "</span>, <span class="st">"_"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>white.columns <span class="op">=</span> white.columns.<span class="bu">str</span>.strip().<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">" "</span>, <span class="st">"_"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="data-integration" class="level3">
+<h3 class="anchored" data-anchor-id="data-integration">3. Data Integration</h3>
+<p>Since we plan to analyze both wine types together, we preserve the identity of each observation before merging. We add a categorical column <code>wine_type</code> to each dataframe and then concatenate them into a single tidy dataset and saved to the processed data folder.</p>
+<div id="da845504" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add wine type labels</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>red[<span class="st">"wine_type"</span>] <span class="op">=</span> <span class="st">"red"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>white[<span class="st">"wine_type"</span>] <span class="op">=</span> <span class="st">"white"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># merge the datasets</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>wine <span class="op">=</span> pd.concat([red, white], ignore_index <span class="op">=</span> <span class="va">True</span>) </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># save to processed folder</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>wine.to_csv(<span class="st">"../data/processed/wine.csv"</span>, index<span class="op">=</span> <span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="0b95357d" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>red[<span class="st">"wine_type"</span>] <span class="op">=</span> <span class="st">"red"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>white[<span class="st">"wine_type"</span>] <span class="op">=</span> <span class="st">"white"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># combine datasets</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>wine <span class="op">=</span> pd.concat([red, white], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>wine.head().style.set_caption(<span class="st">"Table 1: Combined Wine Dataset Preview"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<style type="text/css">
+</style>
+
+<div id="T_4ef6c" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_4ef6c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Table 1: Combined Wine Dataset Preview
+</figcaption>
+<div aria-describedby="T_4ef6c-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="T_4ef6c" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_4ef6c_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">fixed_acidity</th>
+<th id="T_4ef6c_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">volatile_acidity</th>
+<th id="T_4ef6c_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">citric_acid</th>
+<th id="T_4ef6c_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">residual_sugar</th>
+<th id="T_4ef6c_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">chlorides</th>
+<th id="T_4ef6c_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">free_sulfur_dioxide</th>
+<th id="T_4ef6c_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">total_sulfur_dioxide</th>
+<th id="T_4ef6c_level0_col7" class="col_heading level0 col7" data-quarto-table-cell-role="th">density</th>
+<th id="T_4ef6c_level0_col8" class="col_heading level0 col8" data-quarto-table-cell-role="th">ph</th>
+<th id="T_4ef6c_level0_col9" class="col_heading level0 col9" data-quarto-table-cell-role="th">sulphates</th>
+<th id="T_4ef6c_level0_col10" class="col_heading level0 col10" data-quarto-table-cell-role="th">alcohol</th>
+<th id="T_4ef6c_level0_col11" class="col_heading level0 col11" data-quarto-table-cell-role="th">quality</th>
+<th id="T_4ef6c_level0_col12" class="col_heading level0 col12" data-quarto-table-cell-role="th">wine_type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th id="T_4ef6c_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">0</th>
+<td id="T_4ef6c_row0_col0" class="data row0 col0">7.400000</td>
+<td id="T_4ef6c_row0_col1" class="data row0 col1">0.700000</td>
+<td id="T_4ef6c_row0_col2" class="data row0 col2">0.000000</td>
+<td id="T_4ef6c_row0_col3" class="data row0 col3">1.900000</td>
+<td id="T_4ef6c_row0_col4" class="data row0 col4">0.076000</td>
+<td id="T_4ef6c_row0_col5" class="data row0 col5">11.000000</td>
+<td id="T_4ef6c_row0_col6" class="data row0 col6">34.000000</td>
+<td id="T_4ef6c_row0_col7" class="data row0 col7">0.997800</td>
+<td id="T_4ef6c_row0_col8" class="data row0 col8">3.510000</td>
+<td id="T_4ef6c_row0_col9" class="data row0 col9">0.560000</td>
+<td id="T_4ef6c_row0_col10" class="data row0 col10">9.400000</td>
+<td id="T_4ef6c_row0_col11" class="data row0 col11">5</td>
+<td id="T_4ef6c_row0_col12" class="data row0 col12">red</td>
+</tr>
+<tr class="even">
+<th id="T_4ef6c_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">1</th>
+<td id="T_4ef6c_row1_col0" class="data row1 col0">7.800000</td>
+<td id="T_4ef6c_row1_col1" class="data row1 col1">0.880000</td>
+<td id="T_4ef6c_row1_col2" class="data row1 col2">0.000000</td>
+<td id="T_4ef6c_row1_col3" class="data row1 col3">2.600000</td>
+<td id="T_4ef6c_row1_col4" class="data row1 col4">0.098000</td>
+<td id="T_4ef6c_row1_col5" class="data row1 col5">25.000000</td>
+<td id="T_4ef6c_row1_col6" class="data row1 col6">67.000000</td>
+<td id="T_4ef6c_row1_col7" class="data row1 col7">0.996800</td>
+<td id="T_4ef6c_row1_col8" class="data row1 col8">3.200000</td>
+<td id="T_4ef6c_row1_col9" class="data row1 col9">0.680000</td>
+<td id="T_4ef6c_row1_col10" class="data row1 col10">9.800000</td>
+<td id="T_4ef6c_row1_col11" class="data row1 col11">5</td>
+<td id="T_4ef6c_row1_col12" class="data row1 col12">red</td>
+</tr>
+<tr class="odd">
+<th id="T_4ef6c_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">2</th>
+<td id="T_4ef6c_row2_col0" class="data row2 col0">7.800000</td>
+<td id="T_4ef6c_row2_col1" class="data row2 col1">0.760000</td>
+<td id="T_4ef6c_row2_col2" class="data row2 col2">0.040000</td>
+<td id="T_4ef6c_row2_col3" class="data row2 col3">2.300000</td>
+<td id="T_4ef6c_row2_col4" class="data row2 col4">0.092000</td>
+<td id="T_4ef6c_row2_col5" class="data row2 col5">15.000000</td>
+<td id="T_4ef6c_row2_col6" class="data row2 col6">54.000000</td>
+<td id="T_4ef6c_row2_col7" class="data row2 col7">0.997000</td>
+<td id="T_4ef6c_row2_col8" class="data row2 col8">3.260000</td>
+<td id="T_4ef6c_row2_col9" class="data row2 col9">0.650000</td>
+<td id="T_4ef6c_row2_col10" class="data row2 col10">9.800000</td>
+<td id="T_4ef6c_row2_col11" class="data row2 col11">5</td>
+<td id="T_4ef6c_row2_col12" class="data row2 col12">red</td>
+</tr>
+<tr class="even">
+<th id="T_4ef6c_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">3</th>
+<td id="T_4ef6c_row3_col0" class="data row3 col0">11.200000</td>
+<td id="T_4ef6c_row3_col1" class="data row3 col1">0.280000</td>
+<td id="T_4ef6c_row3_col2" class="data row3 col2">0.560000</td>
+<td id="T_4ef6c_row3_col3" class="data row3 col3">1.900000</td>
+<td id="T_4ef6c_row3_col4" class="data row3 col4">0.075000</td>
+<td id="T_4ef6c_row3_col5" class="data row3 col5">17.000000</td>
+<td id="T_4ef6c_row3_col6" class="data row3 col6">60.000000</td>
+<td id="T_4ef6c_row3_col7" class="data row3 col7">0.998000</td>
+<td id="T_4ef6c_row3_col8" class="data row3 col8">3.160000</td>
+<td id="T_4ef6c_row3_col9" class="data row3 col9">0.580000</td>
+<td id="T_4ef6c_row3_col10" class="data row3 col10">9.800000</td>
+<td id="T_4ef6c_row3_col11" class="data row3 col11">6</td>
+<td id="T_4ef6c_row3_col12" class="data row3 col12">red</td>
+</tr>
+<tr class="odd">
+<th id="T_4ef6c_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">4</th>
+<td id="T_4ef6c_row4_col0" class="data row4 col0">7.400000</td>
+<td id="T_4ef6c_row4_col1" class="data row4 col1">0.700000</td>
+<td id="T_4ef6c_row4_col2" class="data row4 col2">0.000000</td>
+<td id="T_4ef6c_row4_col3" class="data row4 col3">1.900000</td>
+<td id="T_4ef6c_row4_col4" class="data row4 col4">0.076000</td>
+<td id="T_4ef6c_row4_col5" class="data row4 col5">11.000000</td>
+<td id="T_4ef6c_row4_col6" class="data row4 col6">34.000000</td>
+<td id="T_4ef6c_row4_col7" class="data row4 col7">0.997800</td>
+<td id="T_4ef6c_row4_col8" class="data row4 col8">3.510000</td>
+<td id="T_4ef6c_row4_col9" class="data row4 col9">0.560000</td>
+<td id="T_4ef6c_row4_col10" class="data row4 col10">9.400000</td>
+<td id="T_4ef6c_row4_col11" class="data row4 col11">5</td>
+<td id="T_4ef6c_row4_col12" class="data row4 col12">red</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>Prior to partitioning the data, we verified the completeness of the dataset. As shown in the output below, there are no missing values across the 13 variables. This simplifies our pipeline as no imputation strategies are required to maintain data integrity.</p>
+<div id="28069dd9" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check for missing values to ensure the dataset is ready for machine learning</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>missing_values_table <span class="op">=</span> wine.isnull().<span class="bu">sum</span>().to_frame(name<span class="op">=</span><span class="st">"Missing Count"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>missing_values_table.style.set_caption(<span class="st">"Table 2: Missing Value Analysis"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<style type="text/css">
+</style>
+
+<div id="T_3fad1" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_3fad1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Table 2: Missing Value Analysis
+</figcaption>
+<div aria-describedby="T_3fad1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="T_3fad1" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_3fad1_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Missing Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th id="T_3fad1_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">fixed_acidity</th>
+<td id="T_3fad1_row0_col0" class="data row0 col0">0</td>
+</tr>
+<tr class="even">
+<th id="T_3fad1_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">volatile_acidity</th>
+<td id="T_3fad1_row1_col0" class="data row1 col0">0</td>
+</tr>
+<tr class="odd">
+<th id="T_3fad1_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">citric_acid</th>
+<td id="T_3fad1_row2_col0" class="data row2 col0">0</td>
+</tr>
+<tr class="even">
+<th id="T_3fad1_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">residual_sugar</th>
+<td id="T_3fad1_row3_col0" class="data row3 col0">0</td>
+</tr>
+<tr class="odd">
+<th id="T_3fad1_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">chlorides</th>
+<td id="T_3fad1_row4_col0" class="data row4 col0">0</td>
+</tr>
+<tr class="even">
+<th id="T_3fad1_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">free_sulfur_dioxide</th>
+<td id="T_3fad1_row5_col0" class="data row5 col0">0</td>
+</tr>
+<tr class="odd">
+<th id="T_3fad1_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">total_sulfur_dioxide</th>
+<td id="T_3fad1_row6_col0" class="data row6 col0">0</td>
+</tr>
+<tr class="even">
+<th id="T_3fad1_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">density</th>
+<td id="T_3fad1_row7_col0" class="data row7 col0">0</td>
+</tr>
+<tr class="odd">
+<th id="T_3fad1_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">ph</th>
+<td id="T_3fad1_row8_col0" class="data row8 col0">0</td>
+</tr>
+<tr class="even">
+<th id="T_3fad1_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">sulphates</th>
+<td id="T_3fad1_row9_col0" class="data row9 col0">0</td>
+</tr>
+<tr class="odd">
+<th id="T_3fad1_level0_row10" class="row_heading level0 row10" data-quarto-table-cell-role="th">alcohol</th>
+<td id="T_3fad1_row10_col0" class="data row10 col0">0</td>
+</tr>
+<tr class="even">
+<th id="T_3fad1_level0_row11" class="row_heading level0 row11" data-quarto-table-cell-role="th">quality</th>
+<td id="T_3fad1_row11_col0" class="data row11 col0">0</td>
+</tr>
+<tr class="odd">
+<th id="T_3fad1_level0_row12" class="row_heading level0 row12" data-quarto-table-cell-role="th">wine_type</th>
+<td id="T_3fad1_row12_col0" class="data row12 col0">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p><a id="cell2" href=""></a> ### 4. Data Partitioning (Train/Test Split) To avoid data leakage and ensure we can evaluate our model’s performance on unseen data, we split the data. We use a 70% training and 30% testing split. We also use stratification on the <code>quality</code> variable to ensure both sets have a similar distribution of quality scores.</p>
+<div id="72aa8bad" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>train, test <span class="op">=</span> train_test_split(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    wine,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    test_size<span class="op">=</span><span class="fl">0.30</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">42</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    stratify<span class="op">=</span>wine[<span class="st">"quality"</span>]</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(train.shape)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(test.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(4547, 13)
+(1950, 13)</code></pre>
+</div>
+</div>
+<p><a id="cell3" href=""></a> ### 5. Exploratory Data Analysis (EDA) With our training data isolated, we perform a summary analysis to understand the chemical difference between high-quality and low-quality wines.</p>
+<div id="ede65b08" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>First, we visualize the distribution of our target variable, <code>quality</code>, to check for class imbalances that might affect our classification results.</p>
+<div id="07a96da4" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the target variable</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sns.countplot(data<span class="op">=</span>train, x<span class="op">=</span><span class="st">"quality"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Figure 1: Distribution of Wine Quality in Training Set"</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Quality Score"</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Count"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wine-quality-classification_files/figure-html/cell-10-output-1.png" width="676" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The historgram reveals that the majority of wines are rated as 5 or 6, while extreme values (3 or 9) are rare.</p>
+<div id="58419b5c" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># distribution of all physicochemical features</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># plot histograms for all numeric features to check for skewness</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>train.drop(columns<span class="op">=</span><span class="st">'quality'</span>).hist(bins<span class="op">=</span><span class="dv">20</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">10</span>), color<span class="op">=</span><span class="st">'steelblue'</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Figure 2: Distribution of Physicochemical Variables"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout(rect<span class="op">=</span>[<span class="dv">0</span>, <span class="fl">0.03</span>, <span class="dv">1</span>, <span class="fl">0.95</span>])</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wine-quality-classification_files/figure-html/cell-11-output-1.png" width="1425" height="917" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In Figure 2, we visualized the distribution of all physicochemical features to assess skewness. While features like <code>pH</code> and <code>density</code> follow a relatively normal distribution, we observed significant right-skewness in <code>residual_sugar</code> and <code>clorides</code>. Additionally, we noted vastly different scales across variables (e.g., <code>total_sulfur_dioxide</code> vs.&nbsp;<code>density</code>), which could lead to biased results in a distance-based algorithm like kNN. These observations suggest that data transformation or feature scaling might be necessary to improve model performance</p>
+<div id="9bda7b0d" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the correlation matrix to identify which features influence quality</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>correlation_matrix <span class="op">=</span> train.corr(numeric_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>sns.heatmap(correlation_matrix, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">'RdBu_r'</span>, center<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Figure 3: Correlation Heatmap of Physicochemical Properties"</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wine-quality-classification_files/figure-html/cell-12-output-1.png" width="862" height="769" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To identify potential predictors for our classification model, we generated a correlation heatmap (Figure 3). This visualization shows that <code>alcohol</code> has the strongest positive correlation with quality, while <code>volatile acidity</code> shows notable nagative correlations.</p>
+<div id="03add21a" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summary statistics for key chemical features</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>eda_summary <span class="op">=</span> train.groupby(<span class="st">"quality"</span>).mean(numeric_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>eda_summary.style.set_caption(<span class="st">"Table 3: Mean Chemical Properties by Quality Score"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<style type="text/css">
+</style>
+
+<div id="T_ab794" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_ab794-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Table 3: Mean Chemical Properties by Quality Score
+</figcaption>
+<div aria-describedby="T_ab794-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="T_ab794" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_ab794_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">fixed_acidity</th>
+<th id="T_ab794_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">volatile_acidity</th>
+<th id="T_ab794_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">citric_acid</th>
+<th id="T_ab794_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">residual_sugar</th>
+<th id="T_ab794_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">chlorides</th>
+<th id="T_ab794_level0_col5" class="col_heading level0 col5" data-quarto-table-cell-role="th">free_sulfur_dioxide</th>
+<th id="T_ab794_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">total_sulfur_dioxide</th>
+<th id="T_ab794_level0_col7" class="col_heading level0 col7" data-quarto-table-cell-role="th">density</th>
+<th id="T_ab794_level0_col8" class="col_heading level0 col8" data-quarto-table-cell-role="th">ph</th>
+<th id="T_ab794_level0_col9" class="col_heading level0 col9" data-quarto-table-cell-role="th">sulphates</th>
+<th id="T_ab794_level0_col10" class="col_heading level0 col10" data-quarto-table-cell-role="th">alcohol</th>
+</tr>
+<tr class="even">
+<th class="index_name level0" data-quarto-table-cell-role="th">quality</th>
+<th class="blank col0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col1" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col2" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col3" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col4" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col5" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col6" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col7" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col8" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col9" data-quarto-table-cell-role="th">&nbsp;</th>
+<th class="blank col10" data-quarto-table-cell-role="th">&nbsp;</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th id="T_ab794_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3</th>
+<td id="T_ab794_row0_col0" class="data row0 col0">7.990476</td>
+<td id="T_ab794_row0_col1" class="data row0 col1">0.545000</td>
+<td id="T_ab794_row0_col2" class="data row0 col2">0.303810</td>
+<td id="T_ab794_row0_col3" class="data row0 col3">4.619048</td>
+<td id="T_ab794_row0_col4" class="data row0 col4">0.078667</td>
+<td id="T_ab794_row0_col5" class="data row0 col5">24.738095</td>
+<td id="T_ab794_row0_col6" class="data row0 col6">95.357143</td>
+<td id="T_ab794_row0_col7" class="data row0 col7">0.995865</td>
+<td id="T_ab794_row0_col8" class="data row0 col8">3.271429</td>
+<td id="T_ab794_row0_col9" class="data row0 col9">0.499048</td>
+<td id="T_ab794_row0_col10" class="data row0 col10">10.169048</td>
+</tr>
+<tr class="even">
+<th id="T_ab794_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">4</th>
+<td id="T_ab794_row1_col0" class="data row1 col0">7.362252</td>
+<td id="T_ab794_row1_col1" class="data row1 col1">0.441026</td>
+<td id="T_ab794_row1_col2" class="data row1 col2">0.280861</td>
+<td id="T_ab794_row1_col3" class="data row1 col3">4.497020</td>
+<td id="T_ab794_row1_col4" class="data row1 col4">0.058603</td>
+<td id="T_ab794_row1_col5" class="data row1 col5">20.874172</td>
+<td id="T_ab794_row1_col6" class="data row1 col6">105.917219</td>
+<td id="T_ab794_row1_col7" class="data row1 col7">0.994999</td>
+<td id="T_ab794_row1_col8" class="data row1 col8">3.227285</td>
+<td id="T_ab794_row1_col9" class="data row1 col9">0.496887</td>
+<td id="T_ab794_row1_col10" class="data row1 col10">10.112252</td>
+</tr>
+<tr class="odd">
+<th id="T_ab794_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">5</th>
+<td id="T_ab794_row2_col0" class="data row2 col0">7.355481</td>
+<td id="T_ab794_row2_col1" class="data row2 col1">0.396484</td>
+<td id="T_ab794_row2_col2" class="data row2 col2">0.306130</td>
+<td id="T_ab794_row2_col3" class="data row2 col3">5.789071</td>
+<td id="T_ab794_row2_col4" class="data row2 col4">0.065277</td>
+<td id="T_ab794_row2_col5" class="data row2 col5">30.301136</td>
+<td id="T_ab794_row2_col6" class="data row2 col6">120.064505</td>
+<td id="T_ab794_row2_col7" class="data row2 col7">0.995921</td>
+<td id="T_ab794_row2_col8" class="data row2 col8">3.212941</td>
+<td id="T_ab794_row2_col9" class="data row2 col9">0.528249</td>
+<td id="T_ab794_row2_col10" class="data row2 col10">9.827137</td>
+</tr>
+<tr class="even">
+<th id="T_ab794_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">6</th>
+<td id="T_ab794_row3_col0" class="data row3 col0">7.212040</td>
+<td id="T_ab794_row3_col1" class="data row3 col1">0.313685</td>
+<td id="T_ab794_row3_col2" class="data row3 col2">0.323184</td>
+<td id="T_ab794_row3_col3" class="data row3 col3">5.602821</td>
+<td id="T_ab794_row3_col4" class="data row3 col4">0.054253</td>
+<td id="T_ab794_row3_col5" class="data row3 col5">31.066751</td>
+<td id="T_ab794_row3_col6" class="data row3 col6">114.730227</td>
+<td id="T_ab794_row3_col7" class="data row3 col7">0.994640</td>
+<td id="T_ab794_row3_col8" class="data row3 col8">3.217693</td>
+<td id="T_ab794_row3_col9" class="data row3 col9">0.535199</td>
+<td id="T_ab794_row3_col10" class="data row3 col10">10.577204</td>
+</tr>
+<tr class="odd">
+<th id="T_ab794_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">7</th>
+<td id="T_ab794_row4_col0" class="data row4 col0">7.133444</td>
+<td id="T_ab794_row4_col1" class="data row4 col1">0.286185</td>
+<td id="T_ab794_row4_col2" class="data row4 col2">0.335311</td>
+<td id="T_ab794_row4_col3" class="data row4 col3">4.719205</td>
+<td id="T_ab794_row4_col4" class="data row4 col4">0.045535</td>
+<td id="T_ab794_row4_col5" class="data row4 col5">30.576159</td>
+<td id="T_ab794_row4_col6" class="data row4 col6">108.654967</td>
+<td id="T_ab794_row4_col7" class="data row4 col7">0.993153</td>
+<td id="T_ab794_row4_col8" class="data row4 col8">3.227947</td>
+<td id="T_ab794_row4_col9" class="data row4 col9">0.547881</td>
+<td id="T_ab794_row4_col10" class="data row4 col10">11.359832</td>
+</tr>
+<tr class="even">
+<th id="T_ab794_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">8</th>
+<td id="T_ab794_row5_col0" class="data row5 col0">6.785185</td>
+<td id="T_ab794_row5_col1" class="data row5 col1">0.290333</td>
+<td id="T_ab794_row5_col2" class="data row5 col2">0.325037</td>
+<td id="T_ab794_row5_col3" class="data row5 col3">5.516667</td>
+<td id="T_ab794_row5_col4" class="data row5 col4">0.040644</td>
+<td id="T_ab794_row5_col5" class="data row5 col5">35.155556</td>
+<td id="T_ab794_row5_col6" class="data row5 col6">121.155556</td>
+<td id="T_ab794_row5_col7" class="data row5 col7">0.992439</td>
+<td id="T_ab794_row5_col8" class="data row5 col8">3.220222</td>
+<td id="T_ab794_row5_col9" class="data row5 col9">0.503481</td>
+<td id="T_ab794_row5_col10" class="data row5 col10">11.674815</td>
+</tr>
+<tr class="odd">
+<th id="T_ab794_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">9</th>
+<td id="T_ab794_row6_col0" class="data row6 col0">7.425000</td>
+<td id="T_ab794_row6_col1" class="data row6 col1">0.312500</td>
+<td id="T_ab794_row6_col2" class="data row6 col2">0.392500</td>
+<td id="T_ab794_row6_col3" class="data row6 col3">4.650000</td>
+<td id="T_ab794_row6_col4" class="data row6 col4">0.026500</td>
+<td id="T_ab794_row6_col5" class="data row6 col5">35.000000</td>
+<td id="T_ab794_row6_col6" class="data row6 col6">110.250000</td>
+<td id="T_ab794_row6_col7" class="data row6 col7">0.991688</td>
+<td id="T_ab794_row6_col8" class="data row6 col8">3.315000</td>
+<td id="T_ab794_row6_col9" class="data row6 col9">0.462500</td>
+<td id="T_ab794_row6_col10" class="data row6 col10">12.100000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<p>This table summarizes how features like <code>alcohol</code> and <code>volatile_acidity</code> change as the quality score increases.</p>
+<p>Since alcohol and acidity seem important, we look at them more closely across different quality levels.</p>
+<div id="f2e351b1" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize feature distribution by quality</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">5</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># alcohol vs quality</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>sns.boxplot(data<span class="op">=</span>train, x<span class="op">=</span><span class="st">'quality'</span>, y<span class="op">=</span><span class="st">'alcohol'</span>, ax<span class="op">=</span>axes[<span class="dv">0</span>])</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Alcohol Content vs. Quality"</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co"># volatile Acidity vs quality</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>sns.boxplot(data<span class="op">=</span>train, x<span class="op">=</span><span class="st">'quality'</span>, y<span class="op">=</span><span class="st">'volatile_acidity'</span>, ax<span class="op">=</span>axes[<span class="dv">1</span>])</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Volatile Acidity vs. Quality"</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Figure 4: Distribution of Key Chemical Features across Quality Ratings"</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wine-quality-classification_files/figure-html/cell-14-output-1.png" width="1180" height="477" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Figure 4 illustrates the relationship between quality and our key chemical features. We observe there is a general upward trend in alcohol content as quality improves. Similarly, volatile acidity shows an overall downward trajectory as quality increases.</p>
+<p>In summary, our exploratory analysis confirms that while no single physicochemical property perfectly separates the wine quality ratings, distinct patterns exist in features like <code>alcohol</code> and <code>volatile_acidity</code>.</p>
+<p>Although the correlation heatmap (Figure 3) reveals that some variables have weaker linear relationships with the target, we have elected to retain the full set of 11 features for the initial classification phase. This approach ensures that the kNN algorithm can leverage the high-dimensional neighborhoods of the data, capturing complex multivariate interactions that simple pairwise correlations might miss.</p>
+<p>However, given the significant disparities in feature scales identified in our histograms (Figure 2), standardization (Z-score scaling) will be a mandatory step in the modeling pipeline to ensure that distance-based calculations are not biased by the magnitude of individual variables. The dataset is now cleaned, verified for integrity, and prepared for the training of our kNN classifier</p>
+<p><a id="cell4" href=""></a> ### 6. kNN analysis</p>
+<p>We will now implement a KNN model to classify each wine into their quality group [1,10]</p>
+<div id="283f37af" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> make_column_transformer</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline, make_pipeline</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, OrdinalEncoder, StandardScaler</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="89fa8bfb" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train.drop(columns<span class="op">=</span>[<span class="st">"quality"</span>])</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train[<span class="st">"quality"</span>]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test.drop(columns<span class="op">=</span>[<span class="st">"quality"</span>])</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test[<span class="st">"quality"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This cell separates features and target for both the training and test sets. - X_train and X_test contain all predictor variables (everything except “quality”). - y_train and y_test contain the target variable “quality” that I want to predict.</p>
+<p>Doing this is necessary because scikit‑learn models expect X (features) and y (labels) as separate inputs.</p>
+<div id="8224b583" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># preprocess the data, make the pipeline</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>categorical_variable <span class="op">=</span> [<span class="st">"wine_type"</span>]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>numerical_variable <span class="op">=</span> [<span class="st">"fixed_acidity"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"volatile_acidity"</span>, </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"citric_acid"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"residual_sugar"</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"chlorides"</span>, </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"free_sulfur_dioxide"</span>, </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"total_sulfur_dioxide"</span>, </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"density"</span>, </span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"ph"</span>, </span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"sulphates"</span>,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"alcohol"</span>]</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> [<span class="st">"quality"</span>]</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> make_column_transformer(</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    ((StandardScaler(), numerical_variable)),</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    (OneHotEncoder(drop<span class="op">=</span><span class="st">"if_binary"</span>), categorical_variable))</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>preprocessor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: #000;
+  --sklearn-color-text-muted: #666;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+}
+
+#sk-container-id-1.light {
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: black;
+  --sklearn-color-background: white;
+  --sklearn-color-border-box: black;
+  --sklearn-color-icon: #696969;
+}
+
+#sk-container-id-1.dark {
+  --sklearn-color-text-on-default-background: white;
+  --sklearn-color-background: #111;
+  --sklearn-color-border-box: white;
+  --sklearn-color-icon: #878787;
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+#sk-container-id-1 label.sk-toggleable__label .caption {
+  font-size: 0.6rem;
+  font-weight: lighter;
+  color: var(--sklearn-color-text-muted);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  display: none;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 0.5em;
+  text-align: center;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-3) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3) 1pt solid;
+  color: var(--sklearn-color-fitted-level-3);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-0);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  border: var(--sklearn-color-fitted-level-0) 1pt solid;
+  color: var(--sklearn-color-fitted-level-0);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-unfitted-level-0);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+
+.estimator-table {
+    font-family: monospace;
+}
+
+.estimator-table summary {
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.estimator-table summary::marker {
+    font-size: 0.7rem;
+}
+
+.estimator-table details[open] {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    padding-bottom: 0.3rem;
+}
+
+.estimator-table .parameters-table {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-top: 0;
+}
+
+.estimator-table .parameters-table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+.estimator-table .parameters-table tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+.estimator-table .parameters-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+.estimator-table table td {
+    border: 1px solid rgba(106, 105, 104, 0.232);
+}
+
+/*
+    `table td`is set in notebook with right text-align.
+    We need to overwrite it.
+*/
+.estimator-table table td.param {
+    text-align: left;
+    position: relative;
+    padding: 0;
+}
+
+.user-set td {
+    color:rgb(255, 94, 0);
+    text-align: left !important;
+}
+
+.user-set td.value {
+    color:rgb(255, 94, 0);
+    background-color: transparent;
+}
+
+.default td {
+    color: black;
+    text-align: left !important;
+}
+
+.user-set td i,
+.default td i {
+    color: black;
+}
+
+/*
+    Styles for parameter documentation links
+    We need styling for visited so jupyter doesn't overwrite it
+*/
+a.param-doc-link,
+a.param-doc-link:link,
+a.param-doc-link:visited {
+    text-decoration: underline dashed;
+    text-underline-offset: .3em;
+    color: inherit;
+    display: block;
+    padding: .5em;
+}
+
+/* "hack" to make the entire area of the cell containing the link clickable */
+a.param-doc-link::before {
+    position: absolute;
+    content: "";
+    inset: 0;
+}
+
+.param-doc-description {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    padding: .5ex;
+    margin-left: 1.5em;
+    color: var(--sklearn-color-text);
+    box-shadow: .3em .3em .4em #999;
+    width: max-content;
+    text-align: left;
+    max-height: 10em;
+    overflow-y: auto;
+
+    /* unfitted */
+    background: var(--sklearn-color-unfitted-level-0);
+    border: thin solid var(--sklearn-color-unfitted-level-3);
+}
+
+/* Fitted state for parameter tooltips */
+.fitted .param-doc-description {
+    /* fitted */
+    background: var(--sklearn-color-fitted-level-0);
+    border: thin solid var(--sklearn-color-fitted-level-3);
+}
+
+.param-doc-link:hover .param-doc-description {
+    display: block;
+}
+
+.copy-paste-icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNy4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjUgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZD0iTTIwOCAwTDMzMi4xIDBjMTIuNyAwIDI0LjkgNS4xIDMzLjkgMTQuMWw2Ny45IDY3LjljOSA5IDE0LjEgMjEuMiAxNC4xIDMzLjlMNDQ4IDMzNmMwIDI2LjUtMjEuNSA0OC00OCA0OGwtMTkyIDBjLTI2LjUgMC00OC0yMS41LTQ4LTQ4bDAtMjg4YzAtMjYuNSAyMS41LTQ4IDQ4LTQ4ek00OCAxMjhsODAgMCAwIDY0LTY0IDAgMCAyNTYgMTkyIDAgMC0zMiA2NCAwIDAgNDhjMCAyNi41LTIxLjUgNDgtNDggNDhMNDggNTEyYy0yNi41IDAtNDgtMjEuNS00OC00OEwwIDE3NmMwLTI2LjUgMjEuNS00OCA0OC00OHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: 0;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>ColumnTransformer(transformers=[('standardscaler', StandardScaler(),
+                                 ['fixed_acidity', 'volatile_acidity',
+                                  'citric_acid', 'residual_sugar', 'chlorides',
+                                  'free_sulfur_dioxide', 'total_sulfur_dioxide',
+                                  'density', 'ph', 'sulphates', 'alcohol']),
+                                ('onehotencoder',
+                                 OneHotEncoder(drop='if_binary'),
+                                 ['wine_type'])])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox"><label for="sk-estimator-id-1" class="sk-toggleable__label  sk-toggleable__label-arrow"><div><div>ColumnTransformer</div></div><div><a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html">?<span>Documentation for ColumnTransformer</span></a><span class="sk-estimator-doc-link ">i<span>Not fitted</span></span></div></label><div class="sk-toggleable__content " data-param-prefix="">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="user-set odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=transformers,-list%20of%20tuples" class="param-doc-link" rel="noreferrer" target="_blank">transformers <span class="param-doc-description">transformers: list of tuples<br>
+<br>
+List of (name, transformer, columns) tuples specifying the<br>
+transformer objects to be applied to subsets of the data.<br>
+<br>
+name : str<br>
+Like in Pipeline and FeatureUnion, this allows the transformer and<br>
+its parameters to be set using ``set_params`` and searched in grid<br>
+search.<br>
+transformer : {'drop', 'passthrough'} or estimator<br>
+Estimator must support :term:`fit` and :term:`transform`.<br>
+Special-cased strings 'drop' and 'passthrough' are accepted as<br>
+well, to indicate to drop the columns or to pass them through<br>
+untransformed, respectively.<br>
+columns : str, array-like of str, int, array-like of int, array-like of bool, slice or callable<br>
+Indexes the data on its second axis. Integers are interpreted as<br>
+positional columns, while strings can reference DataFrame columns<br>
+by name. A scalar string or int should be used where<br>
+``transformer`` expects X to be a 1d array-like (vector),<br>
+otherwise a 2d array will be passed to the transformer.<br>
+A callable is passed the input data `X` and can return any of the<br>
+above. To select multiple columns by name or dtype, you can use<br>
+:obj:`make_column_selector`.</span></a></td>
+<td class="value">[('standardscaler', ...), ('onehotencoder', ...)]</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=remainder,-%7B%27drop%27%2C%20%27passthrough%27%7D%20or%20estimator%2C%20default%3D%27drop%27" class="param-doc-link" rel="noreferrer" target="_blank">remainder <span class="param-doc-description">remainder: {'drop', 'passthrough'} or estimator, default='drop'<br>
+<br>
+By default, only the specified columns in `transformers` are<br>
+transformed and combined in the output, and the non-specified<br>
+columns are dropped. (default of ``'drop'``).<br>
+By specifying ``remainder='passthrough'``, all remaining columns that<br>
+were not specified in `transformers`, but present in the data passed<br>
+to `fit` will be automatically passed through. This subset of columns<br>
+is concatenated with the output of the transformers. For dataframes,<br>
+extra columns not seen during `fit` will be excluded from the output<br>
+of `transform`.<br>
+By setting ``remainder`` to be an estimator, the remaining<br>
+non-specified columns will use the ``remainder`` estimator. The<br>
+estimator must support :term:`fit` and :term:`transform`.<br>
+Note that using this feature requires that the DataFrame columns<br>
+input at :term:`fit` and :term:`transform` have identical order.</span></a></td>
+<td class="value">'drop'</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=sparse_threshold,-float%2C%20default%3D0.3" class="param-doc-link" rel="noreferrer" target="_blank">sparse_threshold <span class="param-doc-description">sparse_threshold: float, default=0.3<br>
+<br>
+If the output of the different transformers contains sparse matrices,<br>
+these will be stacked as a sparse matrix if the overall density is<br>
+lower than this value. Use ``sparse_threshold=0`` to always return<br>
+dense. When the transformed output consists of all dense data, the<br>
+stacked result will be dense, and this keyword will be ignored.</span></a></td>
+<td class="value">0.3</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=n_jobs,-int%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">n_jobs <span class="param-doc-description">n_jobs: int, default=None<br>
+<br>
+Number of jobs to run in parallel.<br>
+``None`` means 1 unless in a :obj:`joblib.parallel_backend` context.<br>
+``-1`` means using all processors. See :term:`Glossary <n_jobs>`<br>
+for more details.</n_jobs></span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=transformer_weights,-dict%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">transformer_weights <span class="param-doc-description">transformer_weights: dict, default=None<br>
+<br>
+Multiplicative weights for features per transformer. The output of the<br>
+transformer is multiplied by these weights. Keys are transformer names,<br>
+values the weights.</span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=verbose,-bool%2C%20default%3DFalse" class="param-doc-link" rel="noreferrer" target="_blank">verbose <span class="param-doc-description">verbose: bool, default=False<br>
+<br>
+If True, the time elapsed while fitting each transformer will be<br>
+printed as it is completed.</span></a></td>
+<td class="value">False</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=verbose_feature_names_out,-bool%2C%20str%20or%20Callable%5B%5Bstr%2C%20str%5D%2C%20str%5D%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">verbose_feature_names_out <span class="param-doc-description">verbose_feature_names_out: bool, str or Callable[[str, str], str], default=True<br>
+<br>
+- If True, :meth:`ColumnTransformer.get_feature_names_out` will prefix<br>
+all feature names with the name of the transformer that generated that<br>
+feature. It is equivalent to setting<br>
+`verbose_feature_names_out="{transformer_name}__{feature_name}"`.<br>
+- If False, :meth:`ColumnTransformer.get_feature_names_out` will not<br>
+prefix any feature names and will error if feature names are not<br>
+unique.<br>
+- If ``Callable[[str, str], str]``,<br>
+:meth:`ColumnTransformer.get_feature_names_out` will rename all the features<br>
+using the name of the transformer. The first argument of the callable is the<br>
+transformer name and the second argument is the feature name. The returned<br>
+string will be the new feature name.<br>
+- If ``str``, it must be a string ready for formatting. The given string will<br>
+be formatted using two field names: ``transformer_name`` and ``feature_name``.<br>
+e.g. ``"{feature_name}__{transformer_name}"``. See :meth:`str.format` method<br>
+from the standard library for more info.<br>
+<br>
+.. versionadded:: 1.0<br>
+<br>
+.. versionchanged:: 1.6<br>
+`verbose_feature_names_out` can be a callable or a string to be formatted.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.compose.ColumnTransformer.html#:~:text=force_int_remainder_cols,-bool%2C%20default%3DFalse" class="param-doc-link" rel="noreferrer" target="_blank">force_int_remainder_cols <span class="param-doc-description">force_int_remainder_cols: bool, default=False<br>
+<br>
+This parameter has no effect.<br>
+<br>
+.. note::<br>
+If you do not access the list of columns for the remainder columns<br>
+in the `transformers_` fitted attribute, you do not need to set<br>
+this parameter.<br>
+<br>
+.. versionadded:: 1.5<br>
+<br>
+.. versionchanged:: 1.7<br>
+The default value for `force_int_remainder_cols` will change from<br>
+`True` to `False` in version 1.7.<br>
+<br>
+.. deprecated:: 1.7<br>
+`force_int_remainder_cols` is deprecated and will be removed in 1.9.</span></a></td>
+<td class="value">'deprecated'</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox"><label for="sk-estimator-id-2" class="sk-toggleable__label  sk-toggleable__label-arrow"><div><div>standardscaler</div></div></label><div class="sk-toggleable__content " data-param-prefix="standardscaler__"><pre>['fixed_acidity', 'volatile_acidity', 'citric_acid', 'residual_sugar', 'chlorides', 'free_sulfur_dioxide', 'total_sulfur_dioxide', 'density', 'ph', 'sulphates', 'alcohol']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox"><label for="sk-estimator-id-3" class="sk-toggleable__label  sk-toggleable__label-arrow"><div><div>StandardScaler</div></div><div><a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.StandardScaler.html">?<span>Documentation for StandardScaler</span></a></div></label><div class="sk-toggleable__content " data-param-prefix="standardscaler__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=copy,-bool%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">copy <span class="param-doc-description">copy: bool, default=True<br>
+<br>
+If False, try to avoid a copy and do inplace scaling instead.<br>
+This is not guaranteed to always work inplace; e.g. if the data is<br>
+not a NumPy array or scipy.sparse CSR matrix, a copy may still be<br>
+returned.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=with_mean,-bool%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">with_mean <span class="param-doc-description">with_mean: bool, default=True<br>
+<br>
+If True, center the data before scaling.<br>
+This does not work (and will raise an exception) when attempted on<br>
+sparse matrices, because centering them entails building a dense<br>
+matrix which in common use cases is likely to be too large to fit in<br>
+memory.</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.StandardScaler.html#:~:text=with_std,-bool%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">with_std <span class="param-doc-description">with_std: bool, default=True<br>
+<br>
+If True, scale the data to unit variance (or equivalently,<br>
+unit standard deviation).</span></a></td>
+<td class="value">True</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox"><label for="sk-estimator-id-4" class="sk-toggleable__label  sk-toggleable__label-arrow"><div><div>onehotencoder</div></div></label><div class="sk-toggleable__content " data-param-prefix="onehotencoder__"><pre>['wine_type']</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-5" type="checkbox"><label for="sk-estimator-id-5" class="sk-toggleable__label  sk-toggleable__label-arrow"><div><div>OneHotEncoder</div></div><div><a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html">?<span>Documentation for OneHotEncoder</span></a></div></label><div class="sk-toggleable__content " data-param-prefix="onehotencoder__">
+        <div class="estimator-table">
+            <details>
+                <summary>Parameters</summary>
+                
+<table class="parameters-table caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=categories,-%27auto%27%20or%20a%20list%20of%20array-like%2C%20default%3D%27auto%27" class="param-doc-link" rel="noreferrer" target="_blank">categories <span class="param-doc-description">categories: 'auto' or a list of array-like, default='auto'<br>
+<br>
+Categories (unique values) per feature:<br>
+<br>
+- 'auto' : Determine categories automatically from the training data.<br>
+- list : ``categories[i]`` holds the categories expected in the ith<br>
+column. The passed categories should not mix strings and numeric<br>
+values within a single feature, and should be sorted in case of<br>
+numeric values.<br>
+<br>
+The used categories can be found in the ``categories_`` attribute.<br>
+<br>
+.. versionadded:: 0.20</span></a></td>
+<td class="value">'auto'</td>
+</tr>
+<tr class="user-set even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=drop,-%7B%27first%27%2C%20%27if_binary%27%7D%20or%20an%20array-like%20of%20shape%20%28n_features%2C%29%2C%20%20%20%20%20%20%20%20%20%20%20%20%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">drop <span class="param-doc-description">drop: {'first', 'if_binary'} or an array-like of shape (n_features,), default=None<br>
+<br>
+Specifies a methodology to use to drop one of the categories per<br>
+feature. This is useful in situations where perfectly collinear<br>
+features cause problems, such as when feeding the resulting data<br>
+into an unregularized linear regression model.<br>
+<br>
+However, dropping one category breaks the symmetry of the original<br>
+representation and can therefore induce a bias in downstream models,<br>
+for instance for penalized linear classification or regression models.<br>
+<br>
+- None : retain all features (the default).<br>
+- 'first' : drop the first category in each feature. If only one<br>
+category is present, the feature will be dropped entirely.<br>
+- 'if_binary' : drop the first category in each feature with two<br>
+categories. Features with 1 or more than 2 categories are<br>
+left intact.<br>
+- array : ``drop[i]`` is the category in feature ``X[:, i]`` that<br>
+should be dropped.<br>
+<br>
+When `max_categories` or `min_frequency` is configured to group<br>
+infrequent categories, the dropping behavior is handled after the<br>
+grouping.<br>
+<br>
+.. versionadded:: 0.21<br>
+The parameter `drop` was added in 0.21.<br>
+<br>
+.. versionchanged:: 0.23<br>
+The option `drop='if_binary'` was added in 0.23.<br>
+<br>
+.. versionchanged:: 1.1<br>
+Support for dropping infrequent categories.</span></a></td>
+<td class="value">'if_binary'</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=sparse_output,-bool%2C%20default%3DTrue" class="param-doc-link" rel="noreferrer" target="_blank">sparse_output <span class="param-doc-description">sparse_output: bool, default=True<br>
+<br>
+When ``True``, it returns a :class:`scipy.sparse.csr_matrix`,<br>
+i.e. a sparse matrix in "Compressed Sparse Row" (CSR) format.<br>
+<br>
+.. versionadded:: 1.2<br>
+`sparse` was renamed to `sparse_output`</span></a></td>
+<td class="value">True</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=dtype,-number%20type%2C%20default%3Dnp.float64" class="param-doc-link" rel="noreferrer" target="_blank">dtype <span class="param-doc-description">dtype: number type, default=np.float64<br>
+<br>
+Desired dtype of output.</span></a></td>
+<td class="value">&lt;class 'numpy.float64'&gt;</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=handle_unknown,-%7B%27error%27%2C%20%27ignore%27%2C%20%27infrequent_if_exist%27%2C%20%27warn%27%7D%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20default%3D%27error%27" class="param-doc-link" rel="noreferrer" target="_blank">handle_unknown <span class="param-doc-description">handle_unknown: {'error', 'ignore', 'infrequent_if_exist', 'warn'}, default='error'<br>
+<br>
+Specifies the way unknown categories are handled during :meth:`transform`.<br>
+<br>
+- 'error' : Raise an error if an unknown category is present during transform.<br>
+- 'ignore' : When an unknown category is encountered during<br>
+transform, the resulting one-hot encoded columns for this feature<br>
+will be all zeros. In the inverse transform, an unknown category<br>
+will be denoted as None.<br>
+- 'infrequent_if_exist' : When an unknown category is encountered<br>
+during transform, the resulting one-hot encoded columns for this<br>
+feature will map to the infrequent category if it exists. The<br>
+infrequent category will be mapped to the last position in the<br>
+encoding. During inverse transform, an unknown category will be<br>
+mapped to the category denoted `'infrequent'` if it exists. If the<br>
+`'infrequent'` category does not exist, then :meth:`transform` and<br>
+:meth:`inverse_transform` will handle an unknown category as with<br>
+`handle_unknown='ignore'`. Infrequent categories exist based on<br>
+`min_frequency` and `max_categories`. Read more in the<br>
+:ref:`User Guide <encoder_infrequent_categories>`.<br>
+- 'warn' : When an unknown category is encountered during transform<br>
+a warning is issued, and the encoding then proceeds as described for<br>
+`handle_unknown="infrequent_if_exist"`.<br>
+<br>
+.. versionchanged:: 1.1<br>
+`'infrequent_if_exist'` was added to automatically handle unknown<br>
+categories and infrequent categories.<br>
+<br>
+.. versionadded:: 1.6<br>
+The option `"warn"` was added in 1.6.</encoder_infrequent_categories></span></a></td>
+<td class="value">'error'</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=min_frequency,-int%20or%20float%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">min_frequency <span class="param-doc-description">min_frequency: int or float, default=None<br>
+<br>
+Specifies the minimum frequency below which a category will be<br>
+considered infrequent.<br>
+<br>
+- If `int`, categories with a smaller cardinality will be considered<br>
+infrequent.<br>
+<br>
+- If `float`, categories with a smaller cardinality than<br>
+`min_frequency * n_samples` will be considered infrequent.<br>
+<br>
+.. versionadded:: 1.1<br>
+Read more in the :ref:`User Guide <encoder_infrequent_categories>`.</encoder_infrequent_categories></span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default odd">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=max_categories,-int%2C%20default%3DNone" class="param-doc-link" rel="noreferrer" target="_blank">max_categories <span class="param-doc-description">max_categories: int, default=None<br>
+<br>
+Specifies an upper limit to the number of output features for each input<br>
+feature when considering infrequent categories. If there are infrequent<br>
+categories, `max_categories` includes the category representing the<br>
+infrequent categories along with the frequent categories. If `None`,<br>
+there is no limit to the number of output features.<br>
+<br>
+.. versionadded:: 1.1<br>
+Read more in the :ref:`User Guide <encoder_infrequent_categories>`.</encoder_infrequent_categories></span></a></td>
+<td class="value">None</td>
+</tr>
+<tr class="default even">
+<td><em></em></td>
+<td class="param"><a href="https://scikit-learn.org/1.8/modules/generated/sklearn.preprocessing.OneHotEncoder.html#:~:text=feature_name_combiner,-%22concat%22%20or%20callable%2C%20default%3D%22concat%22" class="param-doc-link" rel="noreferrer" target="_blank">feature_name_combiner <span class="param-doc-description">feature_name_combiner: "concat" or callable, default="concat"<br>
+<br>
+Callable with signature `def callable(input_feature, category)` that returns a<br>
+string. This is used to create feature names to be returned by<br>
+:meth:`get_feature_names_out`.<br>
+<br>
+`"concat"` concatenates encoded feature name and category with<br>
+`feature + "_" + str(category)`.E.g. feature X with values 1, 6, 7 create<br>
+feature names `X_1, X_6, X_7`.<br>
+<br>
+.. versionadded:: 1.3</span></a></td>
+<td class="value">'concat'</td>
+</tr>
+</tbody>
+</table>
+
+            </details>
+        </div>
+    </div></div></div></div></div></div></div></div></div></div><script>function copyToClipboard(text, element) {
+    // Get the parameter prefix from the closest toggleable content
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const fullParamName = paramPrefix ? `${paramPrefix}${text}` : text;
+
+    const originalStyle = element.style;
+    const computedStyle = window.getComputedStyle(element);
+    const originalWidth = computedStyle.width;
+    const originalHTML = element.innerHTML.replace('Copied!', '');
+
+    navigator.clipboard.writeText(fullParamName)
+        .then(() => {
+            element.style.width = originalWidth;
+            element.style.color = 'green';
+            element.innerHTML = "Copied!";
+
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            element.style.color = 'red';
+            element.innerHTML = "Failed!";
+            setTimeout(() => {
+                element.innerHTML = originalHTML;
+                element.style = originalStyle;
+            }, 2000);
+        });
+    return false;
+}
+
+document.querySelectorAll('.copy-paste-icon').forEach(function(element) {
+    const toggleableContent = element.closest('.sk-toggleable__content');
+    const paramPrefix = toggleableContent ? toggleableContent.dataset.paramPrefix : '';
+    const paramName = element.parentElement.nextElementSibling
+        .textContent.trim().split(' ')[0];
+    const fullParamName = paramPrefix ? `${paramPrefix}${paramName}` : paramName;
+
+    element.setAttribute('title', fullParamName);
+});
+
+
+/**
+ * Adapted from Skrub
+ * https://github.com/skrub-data/skrub/blob/403466d1d5d4dc76a7ef569b3f8228db59a31dc3/skrub/_reporting/_data/templates/report.js#L789
+ * @returns "light" or "dark"
+ */
+function detectTheme(element) {
+    const body = document.querySelector('body');
+
+    // Check VSCode theme
+    const themeKindAttr = body.getAttribute('data-vscode-theme-kind');
+    const themeNameAttr = body.getAttribute('data-vscode-theme-name');
+
+    if (themeKindAttr && themeNameAttr) {
+        const themeKind = themeKindAttr.toLowerCase();
+        const themeName = themeNameAttr.toLowerCase();
+
+        if (themeKind.includes("dark") || themeName.includes("dark")) {
+            return "dark";
+        }
+        if (themeKind.includes("light") || themeName.includes("light")) {
+            return "light";
+        }
+    }
+
+    // Check Jupyter theme
+    if (body.getAttribute('data-jp-theme-light') === 'false') {
+        return 'dark';
+    } else if (body.getAttribute('data-jp-theme-light') === 'true') {
+        return 'light';
+    }
+
+    // Guess based on a parent element's color
+    const color = window.getComputedStyle(element.parentNode, null).getPropertyValue('color');
+    const match = color.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i);
+    if (match) {
+        const [r, g, b] = [
+            parseFloat(match[1]),
+            parseFloat(match[2]),
+            parseFloat(match[3])
+        ];
+
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+        const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (luma > 180) {
+            // If the text is very bright we have a dark theme
+            return 'dark';
+        }
+        if (luma < 75) {
+            // If the text is very dark we have a light theme
+            return 'light';
+        }
+        // Otherwise fall back to the next heuristic.
+    }
+
+    // Fallback to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+
+function forceTheme(elementId) {
+    const estimatorElement = document.querySelector(`#${elementId}`);
+    if (estimatorElement === null) {
+        console.error(`Element with id ${elementId} not found.`);
+    } else {
+        const theme = detectTheme(estimatorElement);
+        estimatorElement.classList.add(theme);
+    }
+}
+
+forceTheme('sk-container-id-1');</script>
+</div>
+</div>
+<p>In this cell, we categorize the columns by type, such as categorical and numerical so that appropriate transformations can be applied. We also record “quality” as the target variable for clarity.</p>
+<p>This cell creates a ColumnTransformer called preprocessor which scales all numerical features with StandardScaler and one‑hot encodes the categorical “wine_type” feature, ensuring that the model receives numeric inputs on a comparable scale.</p>
+<div id="2168353f" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsClassifier</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsClassifier()</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"preprocessing"</span>, preprocessor),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"knn"</span>, knn)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We are mkaing the knn classifier model to predict wine quality based on the nearest training observations.</p>
+<p>The pipeline applies the preprocessor first, to transform the data and then fits the KNN classifier, which guarantees that the exact same preprocessing steps are applied during both training and predicting.</p>
+<div id="50bd30de" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> StratifiedKFold</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"knn__n_neighbors"</span>: [<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">15</span>]}</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>grid_search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    pipeline, </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    param_grid, </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>), </span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    scoring <span class="op">=</span> <span class="st">"f1_weighted"</span> </span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>grid_search.fit(X_train, y_train)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>best_param <span class="op">=</span> grid_search.best_params_</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(best_param)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/siluni/Downloads/python/.venv/lib/python3.13/site-packages/sklearn/model_selection/_split.py:813: UserWarning: The least populated class in y has only 4 members, which is less than n_splits=5.
+  warnings.warn(</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'knn__n_neighbors': 7}</code></pre>
+</div>
+</div>
+<div id="b69990eb" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> grid_search.best_estimator_</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> model.predict(X_test)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>y_pred</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>array([7, 5, 5, ..., 6, 5, 7], shape=(1950,))</code></pre>
+</div>
+</div>
+<p>Now, we will search over different model settings in a statistically reliable way, using grid search.</p>
+<p>First, we defined a parameter grid for n_neighbors of the KNN step in the pipeline, the we created a stratified 5‑fold cross‑validation splitter to preserve class balance across folds, and constructed a GridSearchCV object that evaluates each candidate value using the weighted F1 score due to class imbalance.</p>
+<p>This cell runs the grid search on the training data and then prints the best hyperparameter configuration, allowing us to determine the most optomal number of n_neighbors for this model.</p>
+<p><a id="cell5" href=""></a> ### 7. Model evaluation</p>
+<div id="85d1bd4d" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate weighted F1 score</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> f1_score</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> f1_score(y_test, y_pred, average<span class="op">=</span><span class="st">'weighted'</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"F1 score: </span><span class="sc">{</span>f1<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>F1 score: 0.53686312404164</code></pre>
+</div>
+</div>
+<p>The calculated F1 score of the model (0.539) suggests that the model is okay but not great. The model is picking the majority classes better than rare classes so there is a slight class imbalance.</p>
+<div id="44f0e7ef" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create confusion matrix</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix, ConfusionMatrixDisplay</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(y_test, y_pred, labels<span class="op">=</span>model.classes_)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>disp <span class="op">=</span> ConfusionMatrixDisplay(confusion_matrix<span class="op">=</span>cm, display_labels<span class="op">=</span>model.classes_)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>disp.plot(cmap<span class="op">=</span><span class="st">'Blues'</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Figure 5: Confusion matrix of the predictions of wine quality score"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>Text(0.5, 1.0, 'Figure 5: Confusion matrix of the predictions of wine quality score')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wine-quality-classification_files/figure-html/cell-22-output-2.png" width="547" height="449" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>From the confusion matrix, we can see that most of the correct predictions are in quality scores of 5 and 6 which are majority classes and some predictions of actual 3,4,8 quality scores are also mistakenly classified as 5 or 6 showing that the model is biased towards majority classes.</p>
+<div id="716e9782" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create classification report</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>report <span class="op">=</span> classification_report(y_test, y_pred, output_dict<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>report_df <span class="op">=</span> pd.DataFrame(report).transpose()</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>report_df.style.set_caption(<span class="st">"Table 4: Classification report of the kNN model"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/siluni/Downloads/python/.venv/lib/python3.13/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/Users/siluni/Downloads/python/.venv/lib/python3.13/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/Users/siluni/Downloads/python/.venv/lib/python3.13/site-packages/sklearn/metrics/_classification.py:1833: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<style type="text/css">
+</style>
+
+<div id="T_d5a84" class="quarto-float quarto-figure quarto-figure-center anchored" data-quarto-postprocess="true">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="T_d5a84-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Table 4: Classification report of the kNN model
+</figcaption>
+<div aria-describedby="T_d5a84-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table id="T_d5a84" class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
+<th id="T_d5a84_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">precision</th>
+<th id="T_d5a84_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">recall</th>
+<th id="T_d5a84_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">f1-score</th>
+<th id="T_d5a84_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">support</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th id="T_d5a84_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3</th>
+<td id="T_d5a84_row0_col0" class="data row0 col0">0.000000</td>
+<td id="T_d5a84_row0_col1" class="data row0 col1">0.000000</td>
+<td id="T_d5a84_row0_col2" class="data row0 col2">0.000000</td>
+<td id="T_d5a84_row0_col3" class="data row0 col3">9.000000</td>
+</tr>
+<tr class="even">
+<th id="T_d5a84_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">4</th>
+<td id="T_d5a84_row1_col0" class="data row1 col0">0.130435</td>
+<td id="T_d5a84_row1_col1" class="data row1 col1">0.046154</td>
+<td id="T_d5a84_row1_col2" class="data row1 col2">0.068182</td>
+<td id="T_d5a84_row1_col3" class="data row1 col3">65.000000</td>
+</tr>
+<tr class="odd">
+<th id="T_d5a84_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">5</th>
+<td id="T_d5a84_row2_col0" class="data row2 col0">0.571223</td>
+<td id="T_d5a84_row2_col1" class="data row2 col1">0.618380</td>
+<td id="T_d5a84_row2_col2" class="data row2 col2">0.593867</td>
+<td id="T_d5a84_row2_col3" class="data row2 col3">642.000000</td>
+</tr>
+<tr class="even">
+<th id="T_d5a84_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">6</th>
+<td id="T_d5a84_row3_col0" class="data row3 col0">0.560000</td>
+<td id="T_d5a84_row3_col1" class="data row3 col1">0.608696</td>
+<td id="T_d5a84_row3_col2" class="data row3 col2">0.583333</td>
+<td id="T_d5a84_row3_col3" class="data row3 col3">851.000000</td>
+</tr>
+<tr class="odd">
+<th id="T_d5a84_level0_row4" class="row_heading level0 row4" data-quarto-table-cell-role="th">7</th>
+<td id="T_d5a84_row4_col0" class="data row4 col0">0.501742</td>
+<td id="T_d5a84_row4_col1" class="data row4 col1">0.444444</td>
+<td id="T_d5a84_row4_col2" class="data row4 col2">0.471358</td>
+<td id="T_d5a84_row4_col3" class="data row4 col3">324.000000</td>
+</tr>
+<tr class="even">
+<th id="T_d5a84_level0_row5" class="row_heading level0 row5" data-quarto-table-cell-role="th">8</th>
+<td id="T_d5a84_row5_col0" class="data row5 col0">0.421053</td>
+<td id="T_d5a84_row5_col1" class="data row5 col1">0.137931</td>
+<td id="T_d5a84_row5_col2" class="data row5 col2">0.207792</td>
+<td id="T_d5a84_row5_col3" class="data row5 col3">58.000000</td>
+</tr>
+<tr class="odd">
+<th id="T_d5a84_level0_row6" class="row_heading level0 row6" data-quarto-table-cell-role="th">9</th>
+<td id="T_d5a84_row6_col0" class="data row6 col0">0.000000</td>
+<td id="T_d5a84_row6_col1" class="data row6 col1">0.000000</td>
+<td id="T_d5a84_row6_col2" class="data row6 col2">0.000000</td>
+<td id="T_d5a84_row6_col3" class="data row6 col3">1.000000</td>
+</tr>
+<tr class="even">
+<th id="T_d5a84_level0_row7" class="row_heading level0 row7" data-quarto-table-cell-role="th">accuracy</th>
+<td id="T_d5a84_row7_col0" class="data row7 col0">0.548718</td>
+<td id="T_d5a84_row7_col1" class="data row7 col1">0.548718</td>
+<td id="T_d5a84_row7_col2" class="data row7 col2">0.548718</td>
+<td id="T_d5a84_row7_col3" class="data row7 col3">0.548718</td>
+</tr>
+<tr class="odd">
+<th id="T_d5a84_level0_row8" class="row_heading level0 row8" data-quarto-table-cell-role="th">macro avg</th>
+<td id="T_d5a84_row8_col0" class="data row8 col0">0.312065</td>
+<td id="T_d5a84_row8_col1" class="data row8 col1">0.265086</td>
+<td id="T_d5a84_row8_col2" class="data row8 col2">0.274933</td>
+<td id="T_d5a84_row8_col3" class="data row8 col3">1950.000000</td>
+</tr>
+<tr class="even">
+<th id="T_d5a84_level0_row9" class="row_heading level0 row9" data-quarto-table-cell-role="th">weighted avg</th>
+<td id="T_d5a84_row9_col0" class="data row9 col0">0.532692</td>
+<td id="T_d5a84_row9_col1" class="data row9 col1">0.548718</td>
+<td id="T_d5a84_row9_col2" class="data row9 col2">0.536863</td>
+<td id="T_d5a84_row9_col3" class="data row9 col3">1950.000000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</div>
+</div>
+<section id="classification-report" class="level4">
+<h4 class="anchored" data-anchor-id="classification-report">Classification Report</h4>
+<p>The model predicts the most common wine quality scores (5 and 6) reasonably well, with F1-scores around 0.58–0.59, reflecting good precision and recall for these classes. <br> Rare quality scores (3, 4, 8, 9) have very low F1-scores, indicating that the model struggles to identify wines with these scores correctly, likely due to their low frequency in the dataset.</p>
+<div id="3772d6f3" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#calculate accuracy score</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">=</span> model.score(X_test, y_test)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy: </span><span class="sc">{</span>accuracy<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Accuracy: 0.549</code></pre>
+</div>
+</div>
+<p>The model predicts the exact wine quality accurately 55% of the time. This accuracy is higher than random guessing (1/10), so the model learns something, but still misses accurate predictions almost half of the time.</p>
+<p><a id="cell6" href=""></a> ## Results In answering our research question regarding the extent of kNN’s predictive power, our model, optimized through cross-validation, achieved a classification accuracy of approximately 55% and a weighted F1-score of 0.54. As shown in the confusion matrix, the model performs strongest when predicting the most frequent quality scores (5 and 6), which represent the majority of the dataset. However, addressing the second part of our question, the model struggles significantly to distinguish between observations at the extremes of the scale (quality scores of 3, 4, 8, and 9). These results confirm that while chemical properties provide a strong signal for average wine quality, they are less effective at distinguishing between exceptionally high or low quality wines without a more balanced training set.</p>
+</section>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p><strong>Summary of Findings</strong></p>
+<p>In this study, we explored whether the physicochemical properties of wine could accurately predict its quality rating. Our k-Nearest Neighbors (kNN) model achieved an accuracy of 55%. The model performed best at identifying wines with quality scores of 5 and 6, which represent the majority of our dataset. However, it significantly struggled to correctly classify wines at the high (8+) and low (3-4) ends of the quality scale.</p>
+<p><strong>Expectations vs.&nbsp;Reality</strong></p>
+<p>We expected that by including all 11 physicochemical features and applying StandardScaler, the kNN model would be able to draw clear boundaries between quality classes. While our EDA showed that alcohol and volatile acidity are strong indicators, the model’s moderate accuracy suggests that there is a high degree of overlap in the chemical neighborhoods of different wine qualities. Our results align with the initial findings of Cortez et al.&nbsp;(2009), who noted that while chemical properties are influential, human preference remains a highly complex variable to model mathematically.</p>
+<p><strong>Impact of Findings</strong></p>
+<p>The impact of these findings for the wine industry is that automated chemical analysis can serve as a useful initial screening tool to identify average wines. However, because the model struggles with rare quality scores, it cannot currently replace human expert sensory evaluation for identifying premium or defective products. For winemakers, this suggests that chemical composition is a strong foundation for quality, but not the entire story.</p>
+<p><strong>Future Questions</strong></p>
+<p>This study leads to several interesting questions for future research: 1. Would a more complex model, such as a Random Forest or Support Vector Machine (SVM), better handle the nonlinear relationships in the data? 2. Are there other chemical markers, such as specific flavor compounds or tannins, that were not in this dataset but could improve prediction accuracy?</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Cortez, P., Cerdeira, A., Almeida, F., Matos, T., &amp; Reis, J. (2009). <em>Modeling wine preferences by data mining from physicochemical properties</em>. Decision Support Systems, 47(4), 547-553. https://doi.org/10.1016/j.dss.2009.05.016 <br> Cortez, P., Cerdeira, A., Almeida, F., Matos, T., &amp; Reis, J. (2009). <em>Wine Quality [Dataset]</em>. UCI Machine Learning Repository. https://doi.org/10.24432/C56S3T. <br> Cover, T., &amp; Hart, P. (1967). <em>Nearest neighbor pattern classification</em>. IEEE Transactions on Information Theory, 13(1), 21-27. https://doi.org/10.1109/TIT.1967.1053964 <br> Pedregosa, F., et al.&nbsp;(2011). <em>Scikit-learn: Machine Learning in Python</em>. Journal of Machine Learning Research, 12, 2825–2830.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
