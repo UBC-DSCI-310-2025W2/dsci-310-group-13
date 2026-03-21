@@ -115,102 +115,13 @@ However, given the significant disparities in feature scales identified in @fig-
 
 ### kNN analysis
 
-We will now implement a KNN model to classify each wine into their quality group [1,10]
+To classify wine quality, we implement a k-Nearest Neighbors (kNN) model that predicts each wine’s rating based on the most similar observations in the dataset. Since kNN relies on distance calculations, all numerical features are standardized to ensure that variables measured on larger scales do not dominate the model. In addition, the categorical variable wine_type is encoded so that both red and white wines can be incorporated into the analysis.
 
-```{python}
-# from sklearn.compose import make_column_transformer
-# from sklearn.pipeline import Pipeline, make_pipeline
-# from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
-```
+To improve model performance, we tune the number of neighbors (k) using cross-validation. By evaluating multiple values of k, [@cover1967nearest] identifies the optimal balance between capturing local structure and avoiding overfitting. Smaller values of k allow the model to closely follow the training data, while larger values produce smoother decision boundaries that generalize better to new observations.
 
-```{python}
-# X_train = train.drop(columns=["quality"])
-# y_train = train["quality"]
+This approach is particularly useful given the patterns observed in @fig-heatmap and @fig-key-features, where wine quality is influenced by multiple interacting physicochemical properties rather than a single dominant factor. By considering similarity across all features simultaneously, kNN is able to capture these multivariate relationships without imposing strict assumptions about the data.
 
-# X_test = test.drop(columns=["quality"])
-# y_test = test["quality"]
-```
-
-This cell separates features and target for both the training and test sets.
-- X_train and X_test contain all predictor variables (everything except "quality").
-- y_train and y_test contain the target variable "quality" that I want to predict.
-
-Doing this is necessary because scikit‑learn models expect X (features) and y (labels) as separate inputs.
-
-```{python}
-# preprocess the data, make the pipeline
-# categorical_variable = ["wine_type"]
-# numerical_variable = ["fixed_acidity",
-#                       "volatile_acidity", 
-#                       "citric_acid",
-#                       "residual_sugar",
-#                       "chlorides", 
-#                       "free_sulfur_dioxide", 
-#                       "total_sulfur_dioxide", 
-#                       "density", 
-#                       "ph", 
-#                       "sulphates",
-#                       "alcohol"]
-# target = ["quality"]
-
-# preprocessor = make_column_transformer(
-#     ((StandardScaler(), numerical_variable)),
-#     (OneHotEncoder(drop="if_binary"), categorical_variable))
-
-# preprocessor
-```
-
-In this cell, we categorize the columns by type, such as categorical and numerical so that appropriate transformations can be applied. We also record "quality" as the target variable for clarity.
-
-This cell creates a ColumnTransformer called preprocessor which scales all numerical features with StandardScaler and one‑hot encodes the categorical "wine_type" feature, ensuring that the model receives numeric inputs on a comparable scale.
-
-```{python}
-# from sklearn.neighbors import KNeighborsClassifier
-
-# knn = KNeighborsClassifier()
-
-# pipeline = Pipeline([
-#     ("preprocessing", preprocessor),
-#     ("knn", knn)
-# ])
-```
-
-We are mkaing the knn classifier model to predict wine quality based on the nearest training observations.
-
-The pipeline applies the preprocessor first, to transform the data and then fits the KNN classifier, which guarantees that the exact same preprocessing steps are applied during both training and predicting.
-
-```{python}
-# from sklearn.model_selection import GridSearchCV
-# from sklearn.model_selection import StratifiedKFold
-
-# param_grid = {
-#     "knn__n_neighbors": [3, 5, 7, 9, 11, 15]}
-
-# grid_search = GridSearchCV(
-#     pipeline, 
-#     param_grid, 
-#     cv = StratifiedKFold(n_splits=5, shuffle=True), 
-#     scoring = "f1_weighted" 
-# )
-
-# grid_search.fit(X_train, y_train)
-
-# best_param = grid_search.best_params_
-# print(best_param)
-```
-
-```{python}
-# model = grid_search.best_estimator_
-
-# y_pred = model.predict(X_test)
-# y_pred
-```
-
-Now, we will search over different model settings in a statistically reliable way, using grid search.
-
-First, we defined a parameter grid for n_neighbors of the KNN step in the pipeline, the we created a stratified 5‑fold cross‑validation splitter to preserve class balance across folds, and constructed a GridSearchCV object that evaluates each candidate value using the weighted F1 score due to class imbalance.
-
-This cell runs the grid search on the training data and then prints the best hyperparameter configuration, allowing us to determine the most optomal number of n_neighbors for this model.
+Overall, the [@cover1967nearest] provides a flexible and intuitive method for classifying wine quality. However, its performance remains sensitive to feature scaling and the distribution of quality scores, meaning that the class imbalance observed in @fig-dist may still influence how well the model distinguishes between less common quality levels.
 
 ### Model evaluation
 
