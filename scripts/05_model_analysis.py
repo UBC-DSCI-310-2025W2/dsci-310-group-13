@@ -1,10 +1,13 @@
 import click
 import pandas as pd
+import os
+import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.pipeline import Pipeline
 from sklearn.compose import make_column_transformer
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 
 @click.command()
@@ -14,7 +17,9 @@ from sklearn.compose import make_column_transformer
               help="Path to testing dataset")
 @click.option('--metrics-output', type=str, required=True,
               help="Path to save evaluation metrics")
-def model_analysis(train_input, test_input, metrics_output):
+@click.option('--plot-output', type=str, required=True, 
+              help="Path to save confusion matrix plot")
+def model_analysis(train_input, test_input, metrics_output, plot_output):
     """
     Train and evaluate a kNN classifier for wine quality prediction.
     """
@@ -64,12 +69,23 @@ def model_analysis(train_input, test_input, metrics_output):
     accuracy = accuracy_score(y_test, y_pred)
     report = classification_report(y_test, y_pred)
 
-    # save results
+    # Create and Save Confusion Matrix
+    cm = confusion_matrix(y_test, y_pred, labels=model.classes_)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=model.classes_)
+    
+    fig, ax = plt.subplots(figsize=(10, 8))
+    disp.plot(cmap='Blues', ax=ax)
+    plt.title("Confusion Matrix of Wine Quality Predictions")
+    
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(plot_output), exist_ok=True)
+    plt.savefig(plot_output)
+    plt.close()
+
+    # save results (existing code)
     with open(metrics_output, "w") as f:
         f.write(f"Accuracy: {accuracy}\n\n")
         f.write(report)
-
-    print(f"Model evaluation saved to {metrics_output}")
 
 
 if __name__ == "__main__":
