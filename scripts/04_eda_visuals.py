@@ -36,7 +36,22 @@ def eda_visuals(input_file, output_dir):
     plt.close()
     print(f"Quality distribution plot saved to {quality_dist_path}")
 
-    # 3. Figure 2: Correlation Heatmap
+    # 3. Figure 2: Distribution of all physicochemical features
+    plt.figure(figsize=(15, 10))
+    train.drop(columns=['quality', 'wine_type'], errors='ignore').hist(
+        bins=20, figsize=(15, 10), color='steelblue', edgecolor='black'
+    )
+    plt.suptitle("Distribution of Physicochemical Variables", fontsize=16)
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    
+    hist_path = os.path.join(output_dir, "feature_distributions.png")
+    plt.savefig(hist_path)
+    plt.close()
+    print(f"Feature histograms saved to {hist_path}")
+    
+
+
+    # 4. Figure 3: Correlation Heatmap
     # We select only numeric columns for correlation (ignoring 'wine_type')
     numeric_df = train.select_dtypes(include=['float64', 'int64'])
     plt.figure(figsize=(12, 10))
@@ -49,18 +64,28 @@ def eda_visuals(input_file, output_dir):
     plt.close()
     print(f"Correlation heatmap saved to {corr_map_path}")
 
-    # 4. Figure 3: Alcohol vs Quality 
-    plt.figure(figsize=(10, 6))
-    sns.boxplot(data=train, x='quality', y='alcohol', palette='Set2')
-    plt.title('Alcohol Content by Wine Quality')
-    plt.xlabel('Quality Rating')
-    plt.ylabel('Alcohol (%)')
-    
-    alcohol_plot_path = os.path.join(output_dir, "alcohol_vs_quality.png")
-    plt.savefig(alcohol_plot_path)
-    plt.close()
-    print(f"Alcohol vs Quality plot saved to {alcohol_plot_path}")
+    # 5. Figure 4: Key Chemical Features vs Quality (Alcohol and Volatile Acidity)
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
 
+    # Alcohol vs Quality
+    sns.boxplot(data=train, x='quality', y='alcohol', ax=axes[0])
+    axes[0].set_title("Alcohol Content vs. Quality")
+    axes[0].set_xlabel("Quality Rating")
+    axes[0].set_ylabel("Alcohol (%)")
+
+    # Volatile Acidity vs Quality
+    sns.boxplot(data=train, x='quality', y='volatile_acidity', ax=axes[1])
+    axes[1].set_title("Volatile Acidity vs. Quality")
+    axes[1].set_xlabel("Quality Rating")
+    axes[1].set_ylabel("Volatile Acidity (g/dm³)")
+
+    plt.suptitle("Distribution of Key Chemical Features across Quality Ratings", fontsize=16)
+    
+    key_features_path = os.path.join(output_dir, "key_features_vs_quality.png")
+    plt.savefig(key_features_path)
+    plt.close()
+    print(f"Key features plot saved to {key_features_path}")
+    
     # 5. Summary Table
     summary_stats = train.describe()
     summary_path = os.path.join(output_dir, "summary_statistics.csv")
