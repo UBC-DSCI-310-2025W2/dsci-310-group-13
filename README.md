@@ -238,7 +238,7 @@ make all
 make clean
 ```
 
-Reproducibility
+## Reproducibility
 
 All experiments are reproducible using the provided code and Docker environment.
 Random states are controlled where applicable.
