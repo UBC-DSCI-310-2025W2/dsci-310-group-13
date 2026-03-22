@@ -142,26 +142,6 @@ f1_match = re.search(r"weighted avg\s+[\d\.]+\s+[\d\.]+\s+([\d\.]+)", report_con
 f1_val = f1_match.group(1) if f1_match else "0.00"
 ```
 
-The calculated F1 score of the model `{python} f1_val` suggests that the model is okay but not great. The model is picking the majority classes better than rare classes so there is a slight class imbalance.
-
-![Confusion Matrix of Wine Quality Predictions](../results/figures/confusion_matrix.png){#fig-confusion-matrix}
-
-From the confusion matrix (@fig-confusion-matrix), we can see that most of the correct predictions are in quality scores of 5 and 6 which are majority classes and some predictions of actual 3,4,8 quality scores are also mistakenly classified as 5 or 6 showing that the model is biased towards majority classes.
-
-```{python}
-## create classification report
-# from sklearn.metrics import classification_report
-
-# report = classification_report(y_test, y_pred, output_dict=True)
-# report_df = pd.DataFrame(report).transpose()
-
-# report_df.style.set_caption("Table 4: Classification report of the kNN model")
-```
-
-#### Classification Report
-The model predicts the most common wine quality scores (5 and 6) reasonably well, with F1-scores around `{python} f1_val`, reflecting good precision and recall for these classes. <br>
-Rare quality scores (3, 4, 8, 9) have very low F1-scores, indicating that the model struggles to identify wines with these scores correctly, likely due to their low frequency in the dataset.
-
 ```{python}
 #| label: tbl-results
 #| tbl-cap: "kNN Classifier Performance Metrics"
@@ -169,6 +149,16 @@ Rare quality scores (3, 4, 8, 9) have very low F1-scores, indicating that the mo
 # print the full report
 print(report_content)
 ```
+
+The calculated F1 score of the model `{python} f1_val` suggests that the model is okay but not great. The model is picking the majority classes better than rare classes so there is a slight class imbalance.
+
+![Confusion Matrix of Wine Quality Predictions](../results/figures/confusion_matrix.png){#fig-confusion-matrix}
+
+From the confusion matrix (@fig-confusion-matrix), we can see that most of the correct predictions are in quality scores of 5 and 6 which are majority classes and some predictions of actual 3,4,8 quality scores are also mistakenly classified as 5 or 6 showing that the model is biased towards majority classes.
+
+#### Classification Report
+The model predicts the most common wine quality scores (5 and 6) reasonably well, with F1-scores around `{python} f1_val`, reflecting good precision and recall for these classes. <br>
+Rare quality scores (3, 4, 8, 9) have very low F1-scores, indicating that the model struggles to identify wines with these scores correctly, likely due to their low frequency in the dataset.
 
 The model predicts the exact wine quality accurately `{python} accuracy_pct` of the time. This accuracy is higher than random guessing (1/10), so the model learns something, but still misses accurate predictions almost half of the time.  
 
