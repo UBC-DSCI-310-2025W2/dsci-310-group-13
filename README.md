@@ -131,6 +131,7 @@ Before running `make all` :
 │    ├── wine-quality-classification.ipynb
 │    └── wine-quality-classification.qmd
 │
+├── .dockerignore
 ├── .gitignore
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
@@ -138,6 +139,7 @@ Before running `make all` :
 ├── LICENSE.md
 ├── Makefile
 ├── README.md
+├── requirements.txt
 └── docker-compose.yml
 ```
 After running `make all` :
@@ -180,6 +182,7 @@ After running `make all` :
 │    ├── wine-quality-classification.ipynb
 │    └── wine-quality-classification.qmd
 │
+├── .dockerignore
 ├── .gitignore
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
@@ -187,6 +190,7 @@ After running `make all` :
 ├── LICENSE.md
 ├── Makefile
 ├── README.md
+├── requirements.txt
 └── docker-compose.yml
 ```
 ## Dependencies
