@@ -103,19 +103,42 @@ While the model captures general trends in the data, it struggles to generalize 
 - Techniques such as **resampling or class weighting** may help address imbalance  
 
 ## Project Structure
-
+Before running `make all` :
 ```
 .
+├── .github/workflows/
+│ 
 ├── data/
-│ ├── raw/
-│ └── processed/
+│    ├── raw/
+│        └── .gitkeep 
+│    └── processed/
+│        └── .gitkeep
+│ 
+├── results/
+│    ├── figures/
+│         └── .gitkeep
+│
+├── scripts/
+│    ├── 01_download_data.py/
+│    ├── 02_clean_data.py/
+│    ├── 03_split_data.py/
+│    ├── 04_eda_visuals.py/
+│    └── 05_model_analysis.py/
+│
+├── source/
+│    ├── references.bib
+│    ├── wine-quality-classification.html
+│    ├── wine-quality-classification.ipynb
+│    └── wine-quality-classification.qmd
+│
+├── .gitignore
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
-├── wine-quality-classification.ipynb
 ├── Dockerfile
-├── README.md
 ├── LICENSE.md
-└── .github/workflows/
+├── Makefile
+├── README.md
+└── docker-compose.yml
 ```
 
 ## Dependencies
