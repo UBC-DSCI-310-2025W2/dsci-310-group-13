@@ -158,8 +158,14 @@ After running `make all` :
 │ 
 ├── results/
 │    ├── figures/
-│         └── .gitkeep
-│    ├── metrics.txt
+│        ├── confusion_matrix.png
+│        ├── correlation_heatmap.png
+│        ├── feature_distributions.png
+│        ├── key_feature_vs_quality.png
+│        ├── quality_distribution.png
+│        ├── summary_statistics.csv
+│        └── .gitkeep
+│    └── metrics.txt
 │
 ├── scripts/
 │    ├── 01_download_data.py/
