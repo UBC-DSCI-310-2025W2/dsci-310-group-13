@@ -35,19 +35,19 @@ The dataset used in this study contains several chemical attributes of wine samp
 Machine learning techniques with the scikit-learn library [@pedregosa2011scikit] can help uncover these patterns and provide predictive models for wine quality. In this project, we apply a k-Nearest Neighbors (kNN) classification algorithm [@cover1967nearest], a distance-based method that predicts the quality of a wine sample by comparing its physicochemical profile to similar observations in the training dataset. Specifically, this study seeks to answer: To what extent can the physicochemical properties of wine be used to accurately classify its quality rating on a scale of 1–10, and for which quality levels does the model struggle to distinguish between observations?
 
 ### Data Description : 
-The data is sourced from the UCI Machine Leaning Repository [@cortez2009wine]. We will be working with the `winequality-red.csv` and `winequality-white.csv` dataset. `winequality-red.csv` contains 1599 observations and `winequality-white.csv` contains 4898 observations. Both datasets contain 12 variables including : 
-- `fixed acidity` (dbl) - concentration of fixed acids in the wine
-- `volatile acidity` (dbl) - amount of acetic acid, which can give a vinegar taste
-- `citric acid` (dbl) – concentration of citric acid
-- `residual sugar` (dbl) – amount of sugar remaining after fermentation
-- `chlorides (dbl)` – salt content of the wine
-- `free sulfur dioxide` (dbl) – free SO₂ level
-- `total sulfur dioxide` (dbl) – total SO₂ level
-- `density` (dbl) – density of the wine
-- `pH` (dbl) – acidity level of the wine
-- `sulphates` (dbl) – potassium sulphate level (wine preservative)
-- `alcohol` (dbl) – alcohol percentage by volume
-- `quality` (int) – quality score assigned to the wine with score of 1 to 10 (target variable) 
+The data is sourced from the UCI Machine Leaning Repository [@cortez2009wine]. We will be working with the `winequality-red.csv` and `winequality-white.csv` dataset. `winequality-red.csv` contains 1599 observations and `winequality-white.csv` contains 4898 observations. Both datasets contain 12 variables including : \
+- `fixed acidity` (dbl) - concentration of fixed acids in the wine \
+- `volatile acidity` (dbl) - amount of acetic acid, which can give a vinegar taste \
+- `citric acid` (dbl) – concentration of citric acid \
+- `residual sugar` (dbl) – amount of sugar remaining after fermentation \
+- `chlorides (dbl)` – salt content of the wine \
+- `free sulfur dioxide` (dbl) – free SO₂ level \
+- `total sulfur dioxide` (dbl) – total SO₂ level \
+- `density` (dbl) – density of the wine \
+- `pH` (dbl) – acidity level of the wine \
+- `sulphates` (dbl) – potassium sulphate level (wine preservative) \
+- `alcohol` (dbl) – alcohol percentage by volume \
+- `quality` (int) – quality score assigned to the wine with score of 1 to 10 (target variable) \
 
 
 
