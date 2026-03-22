@@ -14,3 +14,17 @@ __pycache__/
 .Rhistory
 .RData
 .Ruserdata
+
+# ignore generated data
+data/raw/*.csv
+data/processed/*.csv
+
+# ignore results
+results/*.txt
+results/*.png
+results/*.csv
+
+# keep folders
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!results/figures/.gitkeep
