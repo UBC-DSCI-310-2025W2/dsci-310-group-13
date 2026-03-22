@@ -227,6 +227,17 @@ Local Environment
 pip install -r requirements.txt
 ```
 
+2. Run the Script to Download Data, Process Data, Generate Results and Render Report: 
+
+```bash
+make all
+```
+
+3. Reset the Project to its Original State: 
+```bash
+make clean
+```
+
 Reproducibility
 
 All experiments are reproducible using the provided code and Docker environment.
