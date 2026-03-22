@@ -140,7 +140,49 @@ Before running `make all` :
 ├── README.md
 └── docker-compose.yml
 ```
-
+After running `make all` :
+```
+.
+├── .github/workflows/
+│ 
+├── data/
+│    ├── raw/
+│        ├── winequality-red.csv
+│        ├── winequality-white.csv
+│        └── .gitkeep 
+│    └── processed/
+│        ├── test.csv
+│        ├── train.csv
+│        ├── wine_cleaned.csv
+│        └── .gitkeep
+│ 
+├── results/
+│    ├── figures/
+│         └── .gitkeep
+│    ├── metrics.txt
+│
+├── scripts/
+│    ├── 01_download_data.py/
+│    ├── 02_clean_data.py/
+│    ├── 03_split_data.py/
+│    ├── 04_eda_visuals.py/
+│    └── 05_model_analysis.py/
+│
+├── source/
+│    ├── references.bib
+│    ├── wine-quality-classification.html
+│    ├── wine-quality-classification.ipynb
+│    └── wine-quality-classification.qmd
+│
+├── .gitignore
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── Dockerfile
+├── LICENSE.md
+├── Makefile
+├── README.md
+└── docker-compose.yml
+```
 ## Dependencies
 
     pandas==2.2.2   
