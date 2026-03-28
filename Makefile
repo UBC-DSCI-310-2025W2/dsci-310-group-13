@@ -7,7 +7,8 @@ all: data/raw/winequality-red.csv \
 	data/processed/train.csv \
 	data/processed/test.csv \
 	results/figures/quality_distribution.png \
-	results/metrics.txt
+	results/metrics.txt \
+	reports/wine-quality-classification.html
 
 # script 01 - download raw data
 data/raw/winequality-red.csv data/raw/winequality-white.csv: scripts/01_download_data.py
@@ -46,6 +47,12 @@ results/metrics.txt results/figures/confusion_matrix.png: data/processed/train.c
 		--test-input "data/processed/test.csv" \
 		--metrics-output "results/metrics.txt"\
 		--plot-output="results/figures/confusion_matrix.png"
+
+
+reports/wine-quality-classification.html: reports/wine-quality-classification.qmd \
+                                          results/figures/quality_distribution.png \
+                                          results/metrics.txt
+	quarto render reports/wine-quality-classification.qmd
 
 # clean
 clean:

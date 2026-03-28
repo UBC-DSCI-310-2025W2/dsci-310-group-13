@@ -67,7 +67,7 @@ def model_analysis(train_input, test_input, metrics_output, plot_output):
 
     # evaluation
     accuracy = accuracy_score(y_test, y_pred)
-    report = classification_report(y_test, y_pred)
+    report = classification_report(y_test, y_pred, zero_division=0)
 
     # Create and Save Confusion Matrix
     cm = confusion_matrix(y_test, y_pred, labels=model.classes_)

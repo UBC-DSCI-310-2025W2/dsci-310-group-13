@@ -1,6 +1,7 @@
 ---
 title: "Wine Quality Analysis"
 author: "Group 13"
+jupyter: python3
 format: 
   html:
     toc: true
