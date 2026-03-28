@@ -15,7 +15,8 @@ RUN pip install \
     seaborn==0.13.2\
     jinja2==3.1.2 \
     requests==2.31.0 \
-    tabulate==0.9.0
+    tabulate==0.9.0 \ 
+    pytest==8.3.4 
 
 # Default command
 CMD ["start-notebook.sh"]
