@@ -3,7 +3,29 @@ import seaborn as sns
 
 def generate_histograms(data, columns, is_categorical=False, title=None):
     """
-    Creates a distribution plot for specified columns.
+    Creates distribution plots (histograms or countplots) for specified columns.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        The dataframe containing the data to visualize.
+    columns : str or list of str
+        The column(s) to plot. If is_categorical is True, only the first column is used.
+    is_categorical : bool, optional
+        If True, generates a Seaborn countplot. If False, generates Matplotlib 
+        histograms for numeric data. Defaults to False.
+    title : str, optional
+        The main title for the figure. Defaults to "Distribution Plot".
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The figure object containing the distribution plots.
+
+    Raises
+    ------
+    ValueError
+        If the provided dataframe is empty.
     """
     if data.empty:
         raise ValueError("The provided DataFrame is empty.")

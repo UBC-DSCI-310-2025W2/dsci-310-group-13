@@ -4,6 +4,27 @@ import seaborn as sns
 def generate_boxplot_comparison(data, x, y_cols, title=None):
     """
     Creates side-by-side boxplots for multiple y-variables against a single x-variable.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        The dataframe containing the variables to plot.
+    x : str
+        The column name to be used for the x-axis (usually a categorical variable like 'quality').
+    y_cols : list of str
+        A list of column names for the y-axis (numerical features like 'alcohol' or 'pH').
+    title : str, optional
+        The main title for the entire figure. Defaults to "Comparison across {x}".
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The figure object containing the generated boxplots.
+
+    Raises
+    ------
+    KeyError
+        If any of the specified columns are not present in the dataframe.
     """
     for col in [x] + y_cols:
         if col not in data.columns:
