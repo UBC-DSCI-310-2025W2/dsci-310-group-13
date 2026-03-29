@@ -214,7 +214,7 @@ cd dsci-310-group-13
 ```
 
 ### 2. Start Docker Container
-We will use Docker to containerize the environment:
+We will use Docker to containerize the environment <br>
 Mac/Linux:
 
 ```bash
