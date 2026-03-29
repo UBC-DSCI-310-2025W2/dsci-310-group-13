@@ -23,6 +23,23 @@ To address this question, we implement and evaluate a **k-Nearest Neighbors (kNN
 
 ---
 
+## How to run the docker container
+
+1. Build the Docker Image
+
+From the root of your project directory (where your Dockerfile is located), run:
+
+```bash
+docker build -t wine-quality-analysis .
+```
+
+1. Run the Docker Container
+To start a container from the image and open an interactive terminal:
+
+```bash
+docker run -it --name wine-analysis-container wine-quality-analysis
+```
+
 ## Dataset
 
 - Source: UCI Machine Learning Repository  
@@ -103,7 +120,9 @@ While the model captures general trends in the data, it struggles to generalize 
 - Techniques such as **resampling or class weighting** may help address imbalance  
 
 ## Project Structure
+
 Before running `make all` :
+
 ```
 .
 ├── .github/workflows/
@@ -142,7 +161,9 @@ Before running `make all` :
 ├── requirements.txt
 └── docker-compose.yml
 ```
+
 After running `make all` :
+
 ```
 .
 ├── .github/workflows/
@@ -193,6 +214,7 @@ After running `make all` :
 ├── requirements.txt
 └── docker-compose.yml
 ```
+
 ## Dependencies
 
     pandas==2.2.2   
@@ -227,13 +249,14 @@ Local Environment
 pip install -r requirements.txt
 ```
 
-2. Run the Script to Download Data, Process Data, Generate Results and Render Report: 
+1. Run the Script to Download Data, Process Data, Generate Results and Render Report:
 
 ```bash
 make all
 ```
 
-3. Reset the Project to its Original State: 
+1. Reset the Project to its Original State:
+
 ```bash
 make clean
 ```
