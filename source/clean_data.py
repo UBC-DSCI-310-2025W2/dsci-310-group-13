@@ -3,6 +3,7 @@ from pandas.errors import EmptyDataError
 from pathlib import Path
 
 
+
 def clean_data(red_input, white_input, output_file):
     """
     Load, clean, merge, and save wine datasets.
