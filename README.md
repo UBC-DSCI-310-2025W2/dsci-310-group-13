@@ -17,28 +17,7 @@ The primary objective of this study is:
 
 > **Can we accurately predict wine quality based on its chemical properties?**
 
-## How to Run the Data Analysis
-
-To address this question, we implement and evaluate a **k-Nearest Neighbors (kNN)** classification model and analyze its performance across different quality levels.
-
----
-
-## How to run the docker container
-
-1. Build the Docker Image
-
-From the root of your project directory (where your Dockerfile is located), run:
-
-```bash
-docker build -t wine-quality-analysis .
-```
-
-1. Run the Docker Container
-To start a container from the image and open an interactive terminal:
-
-```bash
-docker run -it --name wine-analysis-container wine-quality-analysis
-```
+To address this question, we implemented and evaluated a **k-Nearest Neighbors (kNN)** classification model and analyzed its performance across different quality levels.
 
 ## Dataset
 
@@ -227,39 +206,86 @@ After running `make all` :
 
 ## Run the project
 
-1. Build the image:
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/UBC-DSCI-310-2025W2/dsci-310-group-13.git
+cd dsci-310-group-13
+```
+
+### 2. Start Docker Container
+
+Mac/Linux:
+
+```bash
+docker run --rm -p 8888:8888 -v "$(pwd):/home/jovyan/work" karensiem/dsci-310-group-13:latest
+```
+---
+
+### 3. Run the Docker Container
+To start a container from the image and open an interactive terminal:
+
+```bash
+docker run -it --name wine-analysis-container wine-quality-analysis
+```
+
+### 4. Build the image:
 
 ```bash
 docker build -t wine-analysis .
 ```
 
-1. Run the container:
+### 5. Run the container:
+
+### With Docker:
 
 ```bash
-docker run -p 8888:8888 wine-analysis
+docker run --rm -p 8888:8888 -v "$(pwd):/home/jovyan/work" karensiem/dsci-310-group-13:latest
 ```
 
-### Run the project without Docker
+### Without Docker
 
 Local Environment
 
-1. Install dependencies:
+### 1. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-1. Run the Script to Download Data, Process Data, Generate Results and Render Report:
+### 2. Make file:
+
+Run the Script to Download Data, Process Data, Generate Results and Render Report:
 
 ```bash
 make all
 ```
 
-1. Reset the Project to its Original State:
+### 3. Clean Makefile:
+
+Reset the Project to its Original State:
 
 ```bash
 make clean
 ```
+
+## How to run tests
+
+### 1. Go to the tests directory
+
+```bash
+cd tests
+```
+
+### 2. run:
+
+### All tests: 
+```bash
+pytest tests/ -v
+```
+### Specific tests:
+pytest <name of the test file> -v
+
 
 ## Reproducibility
 
