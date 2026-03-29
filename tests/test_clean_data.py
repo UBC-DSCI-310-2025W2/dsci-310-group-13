@@ -1,80 +1,81 @@
 import pytest
 import pandas as pd
-from source.clean_data import clean_column_names, add_wine_type, merge_datasets
+from source.clean_data import clean_data
 
 
-# clean_column_names
+# simple case 1
 
-def test_clean_column_names_simple():
-    """Simple case: columns with spaces and capitals are standardized."""
-    df = pd.DataFrame(columns=["Fixed Acidity", "pH"])
-    cleaned = clean_column_names(df)
-    
-    assert list(cleaned.columns) == ["fixed_acidity", "ph"]
+def test_clean_data_simple_basic(tmp_path):
+    """Basic case: small datasets are cleaned and merged correctly."""
+
+    red_df = pd.DataFrame({"Fixed Acidity": [1], "pH": [3.5]})
+    white_df = pd.DataFrame({"Fixed Acidity": [2], "pH": [3.0]})
+
+    red_path = tmp_path / "red.csv"
+    white_path = tmp_path / "white.csv"
+    output_path = tmp_path / "output.csv"
+
+    red_df.to_csv(red_path, index=False)
+    white_df.to_csv(white_path, index=False)
+
+    result = clean_data(red_path, white_path, output_path)
+
+    assert result.shape[0] == 2
+    assert list(result.columns) == ["fixed_acidity", "ph", "wine_type"]
+    assert list(result["wine_type"]) == ["red", "white"]
+    assert output_path.exists()
 
 
-def test_clean_column_names_edge():
-    """Edge case: columns already clean should stay the same."""
-    df = pd.DataFrame(columns=["fixed_acidity", "pH"])
-    cleaned = clean_column_names(df)
-    
-    assert list(cleaned.columns) == ["fixed_acidity", "ph"]
+# Simple case 2
 
 
-def test_clean_column_names_error():
-    """Error case: input is not a DataFrame."""
+def test_clean_data_multiple_rows(tmp_path):
+    """Normal case: multiple rows per dataset."""
+
+    red_df = pd.DataFrame({"Fixed Acidity": [1, 2], "pH": [3.5, 3.6]})
+    white_df = pd.DataFrame({"Fixed Acidity": [3, 4], "pH": [3.0, 3.1]})
+
+    red_path = tmp_path / "red.csv"
+    white_path = tmp_path / "white.csv"
+    output_path = tmp_path / "output.csv"
+
+    red_df.to_csv(red_path, index=False)
+    white_df.to_csv(white_path, index=False)
+
+    result = clean_data(red_path, white_path, output_path)
+
+    # 4 rows total
+    assert result.shape[0] == 4
+
+    # check order and labels
+    assert list(result["wine_type"]) == ["red", "red", "white", "white"]
+
+
+# Edge case
+
+def test_clean_data_empty_inputs(tmp_path):
+    """Edge case: empty datasets."""
+
+    red_df = pd.DataFrame({"dummy": []})
+    white_df = pd.DataFrame({"dummy": []})
+
+    red_path = tmp_path / "red.csv"
+    white_path = tmp_path / "white.csv"
+    output_path = tmp_path / "output.csv"
+
+    red_df.to_csv(red_path, index=False)
+    white_df.to_csv(white_path, index=False)
+
+    result = clean_data(red_path, white_path, output_path)
+
+    assert result.empty
+    assert "wine_type" in result.columns
+
+
+# Error case
+
+def test_clean_data_invalid_path():
+    """Error case: invalid file paths."""
+
     with pytest.raises(ValueError):
-        clean_column_names("not_a_df")
-
-
-# -----------------------------
-# add_wine_type
-# -----------------------------
-
-def test_add_wine_type_simple():
-    """Simple case: adds 'red' label to dataframe."""
-    df = pd.DataFrame({"a": [1, 2]})
-    labeled = add_wine_type(df, "red")
-    assert "wine_type" in labeled.columns
-    assert all(labeled["wine_type"] == "red")
-
-
-def test_add_wine_type_edge():
-    """Edge case: empty DataFrame still adds wine_type column."""
-    df = pd.DataFrame()
-    labeled = add_wine_type(df, "white")
-    assert "wine_type" in labeled.columns
-    assert labeled.empty or all(labeled["wine_type"] == "white")
-
-
-def test_add_wine_type_error():
-    """Error case: invalid wine_type string."""
-    df = pd.DataFrame({"a": [1]})
-    with pytest.raises(ValueError):
-        add_wine_type(df, "rose")  # invalid type
-
-
-# merge_datasets
-
-def test_merge_datasets_simple():
-    """Simple case: merges two small DataFrames."""
-    df1 = pd.DataFrame({"a": [1, 2]})
-    df2 = pd.DataFrame({"a": [3, 4]})
-    merged = merge_datasets(df1, df2)
-    assert merged.shape[0] == 4
-    assert list(merged["a"]) == [1, 2, 3, 4]
-
-
-def test_merge_datasets_edge():
-    """Edge case: one empty DataFrame merged with a non-empty DataFrame."""
-    df1 = pd.DataFrame()
-    df2 = pd.DataFrame({"a": [1, 2]})
-    merged = merge_datasets(df1, df2)
-    assert merged.shape[0] == 2
-    assert list(merged["a"]) == [1, 2]
-
-
-def test_merge_datasets_error():
-    """Error case: input is not a DataFrame."""
-    with pytest.raises(ValueError):
-        merge_datasets("not_a_df", pd.DataFrame({"a": [1]}))
+        clean_data("bad_red.csv", "bad_white.csv", "out.csv")

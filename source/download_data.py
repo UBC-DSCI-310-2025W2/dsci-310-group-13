@@ -3,62 +3,59 @@ from pathlib import Path
 import os
 
 
-def load_csv_from_url(url, sep=";"):
-    """Load a CSV dataset from a URL."""
-    validate_string(url, "url")
-    
+def download_data(red_url, white_url, output_dir, sep=";"):
+    """
+    Download wine datasets from URLs and save them locally.
+
+    Parameters
+    ----------
+    red_url : str or Path
+        URL for red wine dataset
+    white_url : str or Path
+        URL for white wine dataset
+    output_dir : str or Path
+        Directory to save downloaded CSV files
+    sep : str
+        Separator used in CSV files (default ';')
+
+    Returns
+    -------
+    tuple
+        (red_df, white_df, red_path, white_path)
+
+    Raises
+    ------
+    ValueError
+        If inputs are invalid or download fails
+    """
+
+    # ---- Convert Path to string ----
+    for name, value in [("red_url", red_url), ("white_url", white_url), ("output_dir", output_dir)]:
+        if isinstance(value, Path):
+            value = str(value)
+
+        if not isinstance(value, str) or value.strip() == "":
+            raise ValueError(f"{name} must be a non-empty string.")
+
+    red_url = str(red_url)
+    white_url = str(white_url)
+    output_dir = str(output_dir)
+
+    # ---- Create directory ----
+    os.makedirs(output_dir, exist_ok=True)
+
+    # ---- Load data ----
     try:
-        df = pd.read_csv(url, sep=sep)
+        red_df = pd.read_csv(red_url, sep=sep)
+        white_df = pd.read_csv(white_url, sep=sep)
     except Exception as e:
-        raise ValueError(f"Could not load data from {url}: {e}")
-    
-    return df
+        raise ValueError(f"Error downloading data: {e}")
 
+    # ---- Save files ----
+    red_path = os.path.join(output_dir, "winequality-red.csv")
+    white_path = os.path.join(output_dir, "winequality-white.csv")
 
-def save_dataframe(df, file_path):
-    """Save a DataFrame to a CSV file."""
-    if isinstance(file_path, Path):
-        file_path = str(file_path)
+    red_df.to_csv(red_path, index=False)
+    white_df.to_csv(white_path, index=False)
 
-    # Now validate
-    validate_string(file_path, "file_path")
-
-    df.to_csv(file_path, index=False)
-    return file_path
-
-
-# utility functions
-def validate_string(value, name):
-    """Validate that a value is a string."""
-    if not isinstance(value, str) or value.strip() == "":
-        raise ValueError(f"{name} must be a non-empty string.")
-
-
-def create_directory(path):
-    """Create a directory if it does not exist."""
-    validate_string(path, "output_dir")
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-def load_csv_from_url(url, sep=";"):
-    """Load a CSV dataset from a URL."""
-    validate_string(url, "url")
-    
-    try:
-        df = pd.read_csv(url, sep=sep)
-    except Exception as e:
-        raise ValueError(f"Could not load data from {url}: {e}")
-    
-    return df
-
-
-def save_dataframe(df, file_path):
-    """Save a DataFrame to a CSV file."""
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError("df must be a pandas DataFrame.")
-    
-    validate_string(file_path, "file_path")
-
-    df.to_csv(file_path, index=False)
-    return file_path
+    return red_df, white_df, red_path, white_path
