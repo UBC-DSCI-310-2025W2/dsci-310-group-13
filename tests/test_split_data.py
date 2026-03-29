@@ -1,5 +1,5 @@
 import pandas as pd
-from src.split_data import stratified_split
+from source.split_data import stratified_split
 
 
 def test_split_size():
