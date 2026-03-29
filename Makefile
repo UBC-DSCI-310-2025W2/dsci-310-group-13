@@ -2,6 +2,8 @@
 
 .PHONY: all clean
 
+export PYTHONPATH := $(shell pwd)
+
 all: data/raw/winequality-red.csv \
 	data/processed/wine_cleaned.csv \
 	data/processed/train.csv \
