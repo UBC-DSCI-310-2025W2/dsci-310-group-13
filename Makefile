@@ -41,8 +41,9 @@ results/figures/quality_distribution.png: scripts/04_eda_visuals.py
 		--output-dir "results/figures"
 
 # script 05 - run model analysis
-results/metrics.txt results/figures/confusion_matrix.png: data/processed/train.csv data/processed/test.csv scripts/05_model_analysis.py
+results/metrics.txt results/figures/confusion_matrix.png: data/processed/wine_cleaned.csv data/processed/train.csv data/processed/test.csv scripts/05_model_analysis.py
 	python scripts/05_model_analysis.py \
+		--df-input "data/processed/wine_cleaned.csv" \
 		--train-input "data/processed/train.csv" \
 		--test-input "data/processed/test.csv" \
 		--metrics-output "results/metrics.txt"\

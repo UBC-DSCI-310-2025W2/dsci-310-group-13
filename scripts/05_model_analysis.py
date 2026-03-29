@@ -8,9 +8,14 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.pipeline import Pipeline
 from sklearn.compose import make_column_transformer
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
+import sys
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from source.preprocessing import build_preprocessor
 
 @click.command()
+@click.option('--df-input', type=str, required=True,
+              help="Path to cleaned dataset")
 @click.option('--train-input', type=str, required=True,
               help="Path to training dataset")
 @click.option('--test-input', type=str, required=True,
@@ -19,12 +24,14 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
               help="Path to save evaluation metrics")
 @click.option('--plot-output', type=str, required=True, 
               help="Path to save confusion matrix plot")
-def model_analysis(train_input, test_input, metrics_output, plot_output):
+              
+def model_analysis(df_input, train_input, test_input, metrics_output, plot_output):
     """
     Train and evaluate a kNN classifier for wine quality prediction.
     """
 
     # load data
+    df = pd.read_csv(df_input)
     train = pd.read_csv(train_input)
     test = pd.read_csv(test_input)
 
@@ -48,10 +55,8 @@ def model_analysis(train_input, test_input, metrics_output, plot_output):
                         "ph", 
                         "sulphates",
                         "alcohol"]
-
-    preprocessor = make_column_transformer(
-        (StandardScaler(), numerical_variable),
-        (OneHotEncoder(drop="if_binary"), categorical_variable))
+                        
+    preprocessor = build_preprocessor(df, categorical_variable, numerical_variable)
         
     # pipeline: scaling + KNN
     model = Pipeline([
