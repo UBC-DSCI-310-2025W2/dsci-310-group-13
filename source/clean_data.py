@@ -1,85 +1,75 @@
 import pandas as pd
+from pandas.errors import EmptyDataError
+from pathlib import Path
 
 
 def clean_data(red_input, white_input, output_file):
     """
-    Clean and merge wine datasets.
+    Load, clean, merge, and save wine datasets.
 
-    Returns:
-        pd.DataFrame: cleaned combined dataset
+    Parameters
+    ----------
+    red_input : str or Path
+        Path to red wine CSV file
+    white_input : str or Path
+        Path to white wine CSV file
+    output_file : str or Path
+        Path to save cleaned dataset
+
+    Returns
+    -------
+    pd.DataFrame
+        Cleaned and merged dataset
+
+    Raises
+    ------
+    ValueError
+        If inputs are invalid or files cannot be read
     """
 
-    # load
-    red = load_csv(red_input)
-    white = load_csv(white_input)
+    # ---- Convert Path to string ----
+    if isinstance(red_input, Path):
+        red_input = str(red_input)
+    if isinstance(white_input, Path):
+        white_input = str(white_input)
+    if isinstance(output_file, Path):
+        output_file = str(output_file)
 
-    # clean columns
-    red = clean_column_names(red)
-    white = clean_column_names(white)
+    # ---- Validate inputs ----
+    for name, path in [("red_input", red_input), ("white_input", white_input), ("output_file", output_file)]:
+        if not isinstance(path, str) or path.strip() == "":
+            raise ValueError(f"{name} must be a non-empty string.")
 
-    # add labels
-    red = add_wine_type(red, "red")
-    white = add_wine_type(white, "white")
-
-    # merge
-    combined = merge_datasets(red, white)
-
-    # save
-    save_csv(combined, output_file)
-
-    return combined
-
-# helper functions
-
-def load_csv(file_path):
-    """Load a CSV file into a DataFrame."""
-    if not isinstance(file_path, str) or file_path.strip() == "":
-        raise ValueError("file_path must be a non-empty string.")
+    # ---- Load data ----
+    try:
+        red = pd.read_csv(red_input)
+    except EmptyDataError:
+        red = pd.DataFrame()
+    except Exception as e:
+        raise ValueError(f"Error reading red_input: {e}")
 
     try:
-        df = pd.read_csv(file_path)
+        white = pd.read_csv(white_input)
+    except EmptyDataError:
+        white = pd.DataFrame()
     except Exception as e:
-        raise ValueError(f"Could not read file {file_path}: {e}")
+        raise ValueError(f"Error reading white_input: {e}")
 
-    return df
+    # ---- Clean column names ----
+    red.columns = red.columns.str.strip().str.lower().str.replace(" ", "_", regex=False)
+    white.columns = white.columns.str.strip().str.lower().str.replace(" ", "_", regex=False)
 
+    # ---- Add wine type ----
+    red["wine_type"] = "red"
+    white["wine_type"] = "white"
 
-def clean_column_names(df):
-    """Standardize column names: lowercase, strip, replace spaces with underscores."""
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError("Input must be a pandas DataFrame.")
+    # ---- Merge datasets ----
+    combined = pd.concat([red, white], ignore_index=True)
 
-    df = df.copy()
-    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
-    return df
+    # ---- Save output ----
+    try:
+        combined.to_csv(output_file, index=False)
+    except Exception as e:
+        raise ValueError(f"Error saving file: {e}")
 
-
-def add_wine_type(df, wine_type):
-    """Add a wine_type column to the DataFrame."""
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError("df must be a pandas DataFrame.")
-    if wine_type not in ["red", "white"]:
-        raise ValueError("wine_type must be 'red' or 'white'.")
-
-    df = df.copy()
-    df["wine_type"] = wine_type
-    return df
-
-
-def merge_datasets(df1, df2):
-    """Merge two DataFrames."""
-    if not all(isinstance(df, pd.DataFrame) for df in [df1, df2]):
-        raise ValueError("Both inputs must be pandas DataFrames.")
-
-    return pd.concat([df1, df2], ignore_index=True)
-
-
-def save_csv(df, output_path):
-    """Save a DataFrame to a CSV file."""
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError("df must be a pandas DataFrame.")
-    if not isinstance(output_path, str) or output_path.strip() == "":
-        raise ValueError("output_path must be a non-empty string.")
-
-    df.to_csv(output_path, index=False)
-    return output_path
+    return combined
