@@ -13,5 +13,5 @@ def clean_csv(red_input, white_input, output_file):
 
     clean_data(red_input, white_input, output_file)  # call the imported function
 
-    if __name__ == "__main__":
-        clean_csv()
+if __name__ == "__main__":
+    clean_csv()

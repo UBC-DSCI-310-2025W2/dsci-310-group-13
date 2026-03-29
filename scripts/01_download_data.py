@@ -13,5 +13,5 @@ def download_csv(red_url, white_url, output_dir):
 
     download_data(red_url, white_url, output_dir)  # call the imported function
 
-    if __name__ == "__main__":
-        download_csv()
+if __name__ == "__main__":
+    download_csv()
