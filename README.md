@@ -207,14 +207,14 @@ After running `make all` :
 ## Run the project
 
 ### 1. Clone Repository
-
+Clone the repistory and go to its root directory in the terminal by pasting on the terminal: 
 ```bash
 git clone https://github.com/UBC-DSCI-310-2025W2/dsci-310-group-13.git
 cd dsci-310-group-13
 ```
 
 ### 2. Start Docker Container
-
+We will use Docker to containerize the environment <br>
 Mac/Linux:
 
 ```bash

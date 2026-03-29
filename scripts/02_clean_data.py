@@ -1,5 +1,9 @@
 import click
 import pandas as pd
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from source.clean_data import clean_data 
 
 @click.command()

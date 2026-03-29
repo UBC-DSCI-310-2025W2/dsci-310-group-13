@@ -13,19 +13,25 @@ def sample_wine_data():
 
 def test_generate_histograms_numeric(sample_wine_data):
     fig = generate_histograms(sample_wine_data, ['alcohol', 'quality'], title="Test Hist")
-    # Coverage: Check object type
+    # Simple Case: Check object type
     assert isinstance(fig, plt.Figure)
     # Coverage: Check title property
     assert fig.texts[0].get_text() == "Test Hist"
     plt.close(fig)
 
 def test_generate_histograms_categorical_content(sample_wine_data):
-    # Coverage: Check if categorical logic actually maps labels to the axis
+    # Simple Case: Check if categorical logic actually maps labels to the axis
     fig = generate_histograms(sample_wine_data, 'wine_type', is_categorical=True)
     ax = fig.gca()
     tick_labels = [tick.get_text() for tick in ax.get_xticklabels()]
     assert 'red' in tick_labels
     assert 'white' in tick_labels
+    plt.close(fig)
+
+def test_generate_histograms_single_string_input(sample_wine_data):
+    # Edge Case: Passing a string instead of a list for 'columns'
+    fig = generate_histograms(sample_wine_data, "alcohol")
+    assert isinstance(fig, plt.Figure)
     plt.close(fig)
 
 def test_generate_histograms_empty_error():
