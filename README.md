@@ -284,7 +284,9 @@ cd tests
 pytest tests/ -v
 ```
 ### Specific tests:
+```bash
 pytest <name of the test file> -v
+```
 
 
 ## Reproducibility
