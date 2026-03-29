@@ -90,8 +90,7 @@ def test_non_numeric_data():
 
 def test_numeric_in_categorical_warns(capsys):
     """Tests warning prints for numeric categorical data."""
-    df = pd.DataFrame({'zip_code': [11111, 22222, 11111]})
-    build_preprocessor(df, ['zip_code'], [])
+    build_preprocessor(numeric_in_categorical_df, ['zip_code'], [])
     
     # Check warning was printed
     captured = capsys.readouterr()
