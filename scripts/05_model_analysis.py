@@ -10,8 +10,7 @@ from sklearn.compose import make_column_transformer
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from source.preprocessing import build_preprocessor
+from wine_quality_tools import build_preprocessor
 
 @click.command()
 @click.option('--df-input', type=str, required=True,
