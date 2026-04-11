@@ -13,7 +13,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     tar -xzf quarto.tar.gz -C /opt/quarto --strip-components=1 && \
     ln -s /opt/quarto/bin/quarto /usr/local/bin/quarto && \
     rm quarto.tar.gz
-    
+
 # Switch back to the regular notebook user for security
 USER ${NB_USER}
 
@@ -31,7 +31,8 @@ RUN pip install \
     jinja2==3.1.2 \
     requests==2.31.0 \
     tabulate==0.9.0 \ 
-    pytest==8.3.4 
+    pytest==8.3.4 \
+    pandera==0.30.1
 
 # Default command
 CMD ["start-notebook.sh"]
