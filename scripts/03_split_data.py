@@ -1,36 +1,17 @@
 import click
-import pandas as pd
-from sklearn.model_selection import train_test_split
+from wine_quality_tools import load_data, stratified_split, save_data
 
 
 @click.command()
-@click.option('--input-file', type=str, required=True,
-              help="Path to cleaned dataset")
-@click.option('--train-output', type=str, required=True,
-              help="Path to save training dataset")
-@click.option('--test-output', type=str, required=True,
-              help="Path to save testing dataset")
-
+@click.option('--input-file', type=str, required=True, help="Path to cleaned dataset")
+@click.option('--train-output', type=str, required=True, help="Path to save training dataset")
+@click.option('--test-output', type=str, required=True, help="Path to save testing dataset")
 def split_data(input_file, train_output, test_output):
-    """
-    Split cleaned dataset into training and testing sets.
-    """
-
-    # load cleaned dataset
-    wine = pd.read_csv(input_file)
-
-    # perform train-test split
-    train, test = train_test_split(
-        wine,
-        test_size=0.30,
-        random_state=42,
-        stratify=wine["quality"]
-    )
-
-    # save datasets
-    train.to_csv(train_output, index=False)
-    test.to_csv(test_output, index=False)
-
+    """Split cleaned dataset into training and testing sets."""
+    wine = load_data(input_file)
+    train, test = stratified_split(wine, target_col="quality", test_size=0.30, random_state=42)
+    save_data(train, train_output)
+    save_data(test, test_output)
     print(f"Training data saved to {train_output}")
     print(f"Testing data saved to {test_output}")
 
