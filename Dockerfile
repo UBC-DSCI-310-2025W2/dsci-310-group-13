@@ -20,6 +20,7 @@ USER ${NB_USER}
 # Copy project files into container
 COPY . .
 
+RUN pip install "git+https://github.com/UBC-DSCI-310-2025W2/winequalitytools.git@main#egg=wine_quality_tools"
 # Install additional dependencies
 RUN pip install \
     click==8.1.7 \
