@@ -1,3 +1,6 @@
+# Wine Quality Tools package (v0.1.0) - installed from GitHub
+git+https://github.com/UBC-DSCI-310-2025W2/winequalitytools.git@main#egg=wine_quality_tools
+
 pandas==2.3.3
 numpy==2.4.1
 scikit-learn==1.8.0
