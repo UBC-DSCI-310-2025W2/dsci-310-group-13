@@ -232,7 +232,7 @@ docker run -it --name wine-analysis-container wine-quality-analysis
 ### 4. Build the image:
 
 ```bash
-docker build -t wine-analysis .
+docker build -t wine-project .
 ```
 
 ### 5. Run the container:
@@ -240,7 +240,7 @@ docker build -t wine-analysis .
 ### With Docker:
 
 ```bash
-docker run --rm -p 8888:8888 -v "$(pwd):/home/jovyan/work" karensiem/dsci-310-group-13:latest
+docker run -it -v $(pwd):/app wine-project
 ```
 
 ### Without Docker
