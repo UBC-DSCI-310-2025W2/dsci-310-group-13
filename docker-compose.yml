@@ -3,7 +3,7 @@ version: "3.9"
 services:
   notebook:
     build: .
-    image: group-ds-notebook:1.0
+    image: wine-analysis:latest 
     ports:
       - "8888:8888"        # Maps Jupyter port from container to your machine
     volumes:
