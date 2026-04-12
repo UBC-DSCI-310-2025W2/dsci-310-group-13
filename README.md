@@ -212,36 +212,29 @@ Clone the repistory and go to its root directory in the terminal by pasting on t
 git clone https://github.com/UBC-DSCI-310-2025W2/dsci-310-group-13.git
 cd dsci-310-group-13
 ```
-
-### 2. Start Docker Container
-We will use Docker to containerize the environment <br>
-Mac/Linux:
+### 2. Build the image:
 
 ```bash
-docker run --rm -p 8888:8888 -v "$(pwd):/home/jovyan/work" karensiem/dsci-310-group-13:latest
+# Build the image
+docker build -t wine-analysis .
 ```
----
 
-### 3. Run the Docker Container
-To start a container from the image and open an interactive terminal:
+### 3. Run the container:
 
 ```bash
-docker run -it --name wine-analysis-container wine-quality-analysis
+# Run the container
+docker run -p 8888:8888 -v $(pwd):/home/jovyan/work wine-analysis
 ```
 
-### 4. Build the image:
+### 4. Open the link for the local browser Jupyter Lab:
 
-```bash
-docker build -t wine-project .
-```
+Open your browser and go to:
 
-### 5. Run the container:
+http://localhost:8888
 
-### With Docker:
+Copy and paste <token> from the terminal output to the local host:
 
-```bash
-docker run -it -v $(pwd):/app wine-project
-```
+NOTE: It be in the format of token=<token>
 
 ### Without Docker
 
