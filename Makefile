@@ -17,8 +17,8 @@ all: data/raw/winequality-red.csv \
 data/raw/winequality-red.csv data/raw/winequality-white.csv: scripts/01_download_data.py
 	mkdir -p data/raw
 	python scripts/01_download_data.py \
-		--red-url "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv" \
-		--white-url "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv" \
+		--red-url "https://raw.githubusercontent.com/silunij/wine-quality-datasets/main/winequality-red.csv" \
+		--white-url "https://raw.githubusercontent.com/silunij/wine-quality-datasets/main/winequality-white.csv" \
 		--output-dir "data/raw"
 
 # script 02 - clean and merge data
