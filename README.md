@@ -176,7 +176,7 @@ After running `make all` :
 │    ├── 04_eda_visuals.py/
 │    └── 05_model_analysis.py/
 │
-├── source/
+├── reports/
 │    ├── references.bib
 │    ├── wine-quality-classification.html
 │    ├── wine-quality-classification.ipynb
