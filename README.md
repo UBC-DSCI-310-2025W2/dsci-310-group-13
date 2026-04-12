@@ -226,15 +226,15 @@ docker build -t wine-analysis .
 docker run -p 8888:8888 -v $(pwd):/home/jovyan/work wine-analysis
 ```
 
-### 4. Open the link for the local browser Jupyter Lab:
+### 4. Open the link to access local Jupyter Lab:
 
-Open your browser and go to:
+After running the container, open:
 
 http://localhost:8888
 
-Copy and paste <token> from the terminal output to the local host:
+If a token is required, copy it from the terminal output and paste it into the browser.
 
-NOTE: It be in the format of token=<token>
+NOTE: It will appear the format of token=<token>
 
 ### Without Docker
 
