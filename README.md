@@ -236,7 +236,7 @@ If a token is required, copy it from the terminal output and paste it into the b
 
 NOTE: It will appear the format of token=<token>
 
-### Without Docker
+### Without Docker (optional)
 
 Local Environment
 
